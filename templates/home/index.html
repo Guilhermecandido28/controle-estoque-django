@@ -1,0 +1,123 @@
+{% extends 'partials/base.html'%}
+{% load static %}
+{% block content %}
+    <!-- Conteúdo da página -->
+    <div class="container-fluid py-5">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-3 mx-5">
+            <div class="col">                
+                <div class="bg-custom card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">VENDAS</h2>
+                        <p class="lead card-text py-4">
+                            Veja as vendas realizadas. Você pode filtrar por período de tempo ou ver todas as vendas.
+                        </p>
+                        <a href="#" class="card-link">
+                            <button class="btn btn-outline-primary">
+                                Get Started
+                                <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>         
+            </div>
+            <div class="col">                
+                <div class="bg-custom card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">VENDEDORES</h2>
+                        <p class="lead card-text py-4">
+                            Veja seus colaboradores. Consulte os maiores vendedores, salário, comissões, férias e informações.
+                        </p>
+                        <a href="#" class="card-link">
+                            <button class="btn btn-outline-primary">
+                                Get Started
+                                <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>         
+            </div>
+            <div class="col">                
+                <div class="bg-custom card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">TAREFAS</h2>
+                        <p class="lead card-text py-4">
+                            Veja as tarefas que precisam ser realizadas. Adicione novas tarefas ou edite-as, como preferir.
+                        </p>
+                        <a href="#" class="card-link">
+                            <button class="btn btn-outline-primary">
+                                Get Started
+                                <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>         
+            </div>
+            <div class="col">                
+                <div class="bg-custom card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">ESTOQUE</h2>
+                        <p class="lead card-text py-4">
+                            Maneje seu estoque de roupas por esse atalho. Você pode cadastrar, editar, excluir e outras informações sobre seu estoque.
+                        </p>
+                        <a href="{% url 'estoque' %}" class="card-link">
+                            <button class="btn btn-outline-primary">
+                                Get Started
+                                <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>         
+            </div>
+            <div class="col">                
+                <div class="bg-custom card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">PERFIL</h2>
+                        <p class="lead card-text py-4">
+                            Edite seu perfil. Mantenha atualizada suas informações: Telefone, email e documentos entre outras.
+                        </p>
+                        <a href="#" class="card-link">
+                            <button class="btn btn-outline-primary">
+                                Get Started
+                                <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>         
+            </div>
+            <div class="col">                
+                <div class="bg-custom card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">CONFIGURAÇÕES</h2>
+                        <p class="lead card-text py-4">
+                            Algumas configurações de usuário.
+                        </p>
+                        <a href="#" class="card-link">
+                            <button class="btn btn-outline-primary">
+                                Get Started
+                                <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>         
+            </div>            
+            <div class="col col-md-12 col-lg-12">                
+                <div class="bg-custom card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">FINANCEIRO</h2>
+                        <p class="lead card-text py-4">
+                            Consulte entradas, saídas de valores e dados estatísticos do seu estabelecimento.
+                        </p>
+                        <a href="#" class="card-link">
+                            <button class="btn btn-outline-primary">
+                                Get Started
+                                <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>         
+            </div>                
+        </div>
+        </div> 
+
+    {% endblock %}
+

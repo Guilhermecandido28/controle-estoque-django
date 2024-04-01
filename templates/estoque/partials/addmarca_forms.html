@@ -1,0 +1,14 @@
+<form class="row mb-3 g-2">
+    {% csrf_token %}
+    <div class="col-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="form-floating mb-3 d-flex form-marca">
+            {% for field in form.visible_fields %}
+            {{ field }}
+            <label for="nova_marca" class="form-label">{{ field.label }}</label>
+            {% endfor %}
+            <button class="btn" hx-post="{% url 'update_marca' %}" hx-target=".form-marca"><i class='bi bi-check-square text-success fs-3'></i></button>
+            <button class="btn btnToast" hx-post="{% url 'deletar_marca' %}" hx-target=".form-marca"><i class='bi bi-x-square-fill text-danger fs-3'></i></button>
+            <button class="btn" hx-get="{% url 'update_marca' %}" hx-target=".form-marca"><i class='bi bi-box-arrow-left text-primary fs-3'></i></button> 
+        </div>       
+    </div>
+</form>

@@ -1,0 +1,14 @@
+<form class="row mb-3 g-2">
+    {% csrf_token %}
+    <div id="col-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="form-floating mb-3 d-flex form-categoria">
+            {% for field in form.visible_fields %}
+            {{ field }}
+                <label class="nova_categoria">{{ field.label }}</label>
+            {% endfor %}
+            <button class="btn" hx-post="{% url 'update_categoria' %}" hx-target=".form-cadastro"><i class='bi bi-check-square text-success fs-3'></i></button>
+            <button class="btn" hx-post="{% url 'deletar_categoria' %}" hx-target=".form-cadastro"><i class='bi bi-x-square-fill text-danger fs-3'></i></button>
+            <button class="btn" hx-get="{% url 'update_categoria' %}" hx-target=".form-cadastro"><i class='bi bi-box-arrow-left text-primary fs-3'></i></button>
+        </div>        
+    </div>
+</form>

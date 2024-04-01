@@ -1,0 +1,15 @@
+{% if object %}
+<tbody class="table-group-divider" id="lista_itens">
+{% for object in object %}
+    {% include "estoque/partials/_linha_tabela.html" %}
+{% endfor %}
+</tbody>
+{% elif not request.method == "DELETE" %}
+<tbody class="table-group-divider" id="lista_itens">
+    <tr>
+        <td>
+            <p>Nenhum item encontrado.</p>
+        </td>
+    </tr>
+</tbody>
+{% endif %}

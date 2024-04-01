@@ -1,0 +1,17 @@
+
+    {{ form.marca }}
+    <label for="{{ field.id_for_label }}" class="form-label">{{ form.marca.label_tag }}</label>
+    <button class="btn fs-3" hx-post="{% url 'add_marca' %}"  hx-swap="innerHTML" hx-target=".form-marca"><i class='bi bi-plus text-success'></i></button>
+    {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger" role="alert">
+            <p>{{ message }}</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% else %}
+            <div class="alert alert-success" role="alert">
+                <p>{{ message }}</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}

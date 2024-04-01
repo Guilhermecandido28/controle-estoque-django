@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'css/login-style.css' %}">
+    <title>Cadastro</title>
+</head>
+<body>
+    <div class="container">
+        <form action="{% url 'cadastro' %}" method="POST">
+            {% csrf_token %}            
+                <h1>Cadastrar</h1>
+                {% include 'partials/_alertas.html' %}
+                
+                {% for field in form.visible_fields %}
+                    <div class="input-box">
+                        {% if forloop.first %}
+                            <label for="{{ field.id_for_label }}"><i class='bx bxs-user'></i> {{field.label}}</label>
+                        {% elif forloop.counter == 2 %}
+                            <label for="{{ field.id_for_label }}">{{field.label}} <i class='bx bxs-envelope'></i></label>
+                        {% elif forloop.counter == 3 %}
+                            <label for="{{ field.id_for_label }}">{{field.label}} <i class="bi bi-eye" id="btn-senha" onclick="mostrarSenha()"></i></label>
+                        {% else %}
+                            <label for="{{ field.id_for_label }}">{{field.label}} <i class="bi bi-eye" id="btn-repetir-senha" onclick="mostrarRepetirSenha()"></i></label>
+                        {% endif %}
+                        {{ field }}
+                    </div>
+                    {% for error in field.errors %}
+                    <div style="color:red;">
+                        {{error}}
+                    </div>
+                    {% endfor %}
+                    
+                {% endfor %}
+                <button type="submit" class="btn">Cadastrar</button>
+                <div class="register-link">
+                    <p>Já tem uma conta? <a href='{% url 'login' %}'>Login</a></p>
+                </div>
+        </form>
+        
+    </div>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>
+
+
+
+
+
+<!-- <form action="{% url 'cadastro' %}" method="POST">{%  csrf_token %}
+            <h1>Cadastro</h1>
+            <div class="input-box">
+                <input type="text" placeholder="Usuário" required name="username">
+                <i class='bx bxs-user'></i>
+            </div>
+            <div class="input-box">
+                <input type="text" placeholder="Email" required name="email">
+                <i class='bx bxs-envelope'></i>
+            </div>
+            <div class="input-box">
+                <input type="password" placeholder="Senha" id="senha" name="senha">                
+                <i class="bi bi-eye" id="btn-senha" onclick="mostrarSenha()"></i>
+            </div>
+
+            <div class="input-box">
+                <input type="password" placeholder="Repetir Senha" id="repetir-senha">
+                <i class="bi bi-eye" id="btn-repetir-senha" onclick="mostrarRepetirSenha()"></i>
+            </div>
+
+            <button type="submit" class="btn">Cadastrar</button>
+            <div class="register-link">
+                <p>Já tem uma conta? <a href='{% url 'login' %}'>Login</a></p>
+            </div>
+        </form> -->

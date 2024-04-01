@@ -1,0 +1,28 @@
+<!-- expense_detail.html -->
+{% load static %}
+<tr id="trExpense">
+    <td>Editar Item:</td>
+    <td>{{ form.descricao }}</td>
+    <td>{{ form.categoria }}</td>
+    <td>{{ form.marca }}</td>
+    <td>{{ form.tamanho }}</td>
+    <td>{{ form.cor }}</td>
+    <td>{{ form.quantidade }}</td>
+    <td>{{ form.fornecedor }}</td>
+    <td>{{ form.venda }}</td>
+    <td>
+        <button
+            type="submit"
+            hx-post="{% url 'update_produto' object.codigo_barras %}"
+            hx-target="#trExpense"
+            hx-swap="outerHTML"
+            class="btn"
+            ><i class="bi bi-check-circle-fill fs-3 text-success"></i></button>
+        <button
+            hx-get="{% url 'update_produto' object.codigo_barras %}"
+            hx-target="#trExpense"
+            hx-swap="outerHTML"
+            class="btn"
+            ><i class="bi bi-box-arrow-left fs-3 text-danger"></i></button>
+    </td>
+</tr>
