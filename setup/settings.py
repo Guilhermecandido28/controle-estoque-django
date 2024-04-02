@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home.apps.HomeConfig',
     'login.apps.LoginConfig',
-    'estoque.apps.EstoqueConfig',  
+    'estoque.apps.EstoqueConfig', 
+    'clientes.apps.ClientesConfig', 
     'rest_framework', 
     'django_filters',
     'rolepermissions'
