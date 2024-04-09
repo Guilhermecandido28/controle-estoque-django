@@ -1,0 +1,29 @@
+<tr>                                
+    <td class="text-center"><img style="height: 50px; width: 50px; border-radius: 50%;" src="{{ object.url_instagram }}"></td>
+    <td>{{ object.nome }}</td>
+    <td>
+        <button 
+        class="btn"
+        hx-post="{% url 'ver_cliente' object.id %}"
+        hx-target = "#div-form"
+        hx-swap="outerHTML"
+        >
+            <i class="bi bi-eye-fill"></i>
+        </button>
+        <button
+        hx-delete="{% url 'deletar_cliente' object.id %}" 
+        hx-confirm="Tem certeza que voce deseja Excluir o cliente?" 
+        hx-swap="outerHTML"
+        hx-target="closest tr"     
+        class="btn">
+           <i class="bi bi-trash-fill text-danger"></i>
+       </button>
+        <button
+        hx-post="{% url 'editar_cliente' object.id %}"
+        hx-swap="outerHTML" 
+        hx-target="#div-form"
+        class="btn">
+           <i class="bi bi-pencil-square text-warning"></i>
+       </button>
+    </td>
+</tr>

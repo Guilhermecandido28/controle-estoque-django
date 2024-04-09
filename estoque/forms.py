@@ -80,7 +80,7 @@ class AddEstoqueForms(forms.ModelForm):
 
 
 class EditarForm(forms.ModelForm):
-    required_css_class = 'required'   
+    required_css_class = 'required' 
 
 
     categoria = forms.ModelChoiceField(queryset=CategoriaEstoque.objects.all(), empty_label=None)
@@ -89,13 +89,7 @@ class EditarForm(forms.ModelForm):
     class Meta:
         model = Estoque
         fields = ('descricao', 'tamanho', 'cor', 'quantidade', 'fornecedor', 'venda')
-        widgets = {
-            'descricao': forms.TextInput(attrs={'placeholder': 'Descrição', 'autofocus': True}),
-            'tamanho': forms.TextInput(attrs={'placeholder': 'Tamanho'}),
-            'cor': forms.TextInput(attrs={'placeholder': 'cor'}),
-            'quantidade': forms.TextInput(attrs={'placeholder': 'Quantidade'}),
-            'fornecedor': forms.TextInput(attrs={'placeholder': 'Fornecedor'}),                      
-        }
+        
 
     def __init__(self, *args, **kwargs):
         super(EditarForm, self).__init__(*args, **kwargs)

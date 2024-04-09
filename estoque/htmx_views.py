@@ -31,7 +31,7 @@ def editar_produto(request, id):
     context = {'object': obj, 'form': form}
     return render(request, template_name, context)
 
-@csrf_exempt
+
 def update_produto(request, id):
     template_name = 'estoque/partials/_linha_tabela.html'    
     obj = Estoque.objects.get(codigo_barras=id)
@@ -39,7 +39,7 @@ def update_produto(request, id):
     context = {'object': obj}
     if request.method == 'POST':        
         if form.is_valid():            
-            form.save()
+            form.save()            
         else:
             errors = form.errors.as_data()
             context['errors'] = errors

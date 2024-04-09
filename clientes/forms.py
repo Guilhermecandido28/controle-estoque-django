@@ -17,25 +17,22 @@ class ClienteForms(forms.ModelForm):
                 ),
             'telefone': forms.TextInput(
                 attrs={
-                'placeholder': ' ',
-                'autofocus': True,
+                'placeholder': ' ',                
                 'id': 'telefone'
                     }
                 ),
             'email': forms.EmailInput(
                 attrs={
-                'placeholder': ' ',
-                'autofocus': True,
+                'placeholder': ' ',                
                 'id': 'email'
                     }
                 ),
             'instagram': forms.TextInput(
                 attrs={
-                'placeholder': ' ',
-                'autofocus': True,
-                'id': 'instagram'
+                'placeholder': ' ',                
+                'id': 'instagram',                
                     }
-                ),
+                ),           
             }
         labels = {
             'nome': 'Nome:',
@@ -49,8 +46,9 @@ class ClienteForms(forms.ModelForm):
         return nome.title()
 
     def __init__(self, *args, **kwargs):
-        super(ClienteForms, self).__init__(*args, **kwargs)        
-        for field in self.fields.items():
-            field.widget.attrs.update({'class': 'form-control', 'placeholder': ' '})    
+        super(ClienteForms, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():  # Descompactando a tupla
+            field.widget.attrs.update({'class': 'form-control', 'placeholder': ' '})
+
     
 

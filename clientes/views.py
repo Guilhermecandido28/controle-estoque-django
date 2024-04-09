@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from .models import Clientes
 
-
-
 def clientes(request):
     if request.user.is_authenticated:
         object = Clientes.objects.all()

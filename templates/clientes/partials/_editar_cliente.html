@@ -1,0 +1,45 @@
+<div id="div-form" hx-target="this" class="card-body d-flex flex-column justify-content-evenly align-items-center">
+    <form id="updatecliente" class="row mb-3 g-2 mx-auto" method="post" >        
+        {% csrf_token %}
+        <div class="col-12 col-md-12 col-lg-6 col-xl-6">
+            <div class="form-floating m-3">
+                {{ form.nome }}
+                <label for="{{ field.id_for_label }}" class="form-label">{{ form.nome.label_tag }}</label>
+            </div>
+        </div>
+        <div class="col-12 col-md-12 col-lg-6 col-xl-6">
+            <div class="form-floating m-3">
+                {{ form.email }}
+                <label for="{{ field.id_for_label }}" class="form-label">{{ form.email.label_tag }}</label>
+            </div>
+        </div>   
+        <div class="col-12 col-md-12 col-lg-6 col-xl-6">
+            <div class="form-floating m-3">
+                {{ form.telefone }}
+                <label for="{{ field.id_for_label }}" class="form-label">{{ form.telefone.label_tag }}</label>
+            </div>
+        </div>
+        <div class="col-12 col-md-12 col-lg-6 col-xl-6">
+            <div class="form-floating m-3">
+                {{ form.instagram }}
+                <label for="{{ field.id_for_label }}" class="form-label">{{ form.instagram.label_tag }}</label>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center my-4">
+            <button class="btn btn-outline-success"
+            type="submit"
+            hx-post = "{% url 'update_edicao' object.id %}"
+            hx-swap = "outerHTML" 
+            hx-target = "#table-clientes"
+            id="btn1"           
+            >Enviar</button>
+            <button class="btn btn-outline-danger mx-3" 
+                hx-get="{% url 'last_cliente' %}" 
+                hx-target="#updatecliente" 
+                hx-swap="outerHTML"
+                id="btn2">
+                Ver Ultimo Cliente
+            </button>
+        </div>        
+    </form>    
+</div>

@@ -1,0 +1,14 @@
+{% if object %}
+<tbody id="table-clientes">
+    {% for object in object %}
+        {% include 'clientes/partials/_linha_tabela.html' %}
+    {% endfor %}
+    {% elif not request.method == "DELETE" %}
+<tbody class="table-group-divider" id="lista_itens">
+    <tr>
+        <td>
+            <p>Nenhum item encontrado.</p>
+        </td>
+    </tr>
+</tbody>   
+{% endif %}  

@@ -1,6 +1,7 @@
 <!-- expense_detail.html -->
 {% load static %}
-<tr id="trExpense">
+
+<tr id="trExpense">        
     <td>Editar Item:</td>
     <td>{{ form.descricao }}</td>
     <td>{{ form.categoria }}</td>
@@ -11,8 +12,8 @@
     <td>{{ form.fornecedor }}</td>
     <td>{{ form.venda }}</td>
     <td>
-        <button
-            type="submit"
+        <button 
+            type="submit"           
             hx-post="{% url 'update_produto' object.codigo_barras %}"
             hx-target="#trExpense"
             hx-swap="outerHTML"
@@ -24,5 +25,5 @@
             hx-swap="outerHTML"
             class="btn"
             ><i class="bi bi-box-arrow-left fs-3 text-danger"></i></button>
-    </td>
+    </td>    
 </tr>

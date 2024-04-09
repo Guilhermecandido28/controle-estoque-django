@@ -5,7 +5,7 @@ class Clientes(models.Model):
     id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=250)
     telefone = models.CharField(max_length=15, default='Não Possui')
-    email = models.EmailField(max_length=50, default='Não Possui')
+    email = models.EmailField(max_length=50, default='NPossui@email.com')
     instagram = models.CharField(max_length=50, default='Não Possui')
     url_instagram = models.URLField(blank=True)
 

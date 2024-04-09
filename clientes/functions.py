@@ -13,4 +13,4 @@ def obter_url_foto_perfil(usuario_instagram):
         print('Erro ao acessar o perfil do Instagram')
         return None
 
-obter_url_foto_perfil('vivimbk')
+
