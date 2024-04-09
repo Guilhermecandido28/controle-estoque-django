@@ -1,5 +1,5 @@
 <!-- <div hx-target="this" class="card-body d-flex flex-column justify-content-evenly align-items-center"> -->
-    <form id="updatecliente" class="row my-3 g-2 mx-auto" method="post">
+    <form id="substituir" class="row my-3 g-2 mx-auto" method="post">
         {% csrf_token %}
         <div class="col-12 col-md-12 col-lg-6 col-xl-6">
             <div class="form-floating m-3">
@@ -36,7 +36,7 @@
             </button>
             <button class="btn btn-outline-danger mx-3" 
                 hx-get="{% url 'last_cliente' %}" 
-                hx-target="#updatecliente" 
+                hx-target="#substituir" 
                 hx-swap="outerHTML">
                 Ver Ultimo Cliente
             </button>
