@@ -25,3 +25,11 @@ class Clientes(models.Model):
             else:
                 self.url_instagram = urls_padrao[0]
             super(Clientes, self).save(*args, **kwargs)
+
+class Eventos(models.Model):
+     cliente = models.ForeignKey(Clientes, on_delete=models.CASCADE)
+     titulo = models.CharField(max_length=250)
+     data_evento = models.DateTimeField()
+
+     class Meta:
+        verbose_name_plural = 'Eventos'

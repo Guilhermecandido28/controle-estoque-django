@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Clientes
+from .models import Clientes, Eventos
 
 class Cliente(admin.ModelAdmin):
     list_display = ('id', 'nome',)
@@ -8,3 +8,11 @@ class Cliente(admin.ModelAdmin):
     list_per_page = 20
 
 admin.site.register(Clientes, Cliente)
+
+class Evento(admin.ModelAdmin):
+    list_display = ('id', 'titulo', 'data_evento',)
+    list_display_links = ['titulo']
+    search_fields = [ 'titulo', 'data_evento' ]
+    list_per_page = 20
+
+admin.site.register(Eventos,  Evento)
