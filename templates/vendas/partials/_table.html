@@ -1,0 +1,9 @@
+<tbody>
+{% if object %}
+{% for item in object %}
+    {% include "vendas/partials/_linha_tabela.html" %}
+{% endfor %}
+{% endif %}
+
+</tbody>
+

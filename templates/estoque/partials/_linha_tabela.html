@@ -1,5 +1,5 @@
 {% load static %}
-{% load money %}
+{% load custom_filters %}
 <tr
     hx-target="this"
     hx-swap="outerHTML"
@@ -14,7 +14,6 @@
     <td>{{ object.fornecedor }}</td>
     <td>{{ object.venda|currency}}</td>
     <td>
-        <button class="btn" hx-delete="{% url 'deletar_produto' object.codigo_barras %}" hx-confirm="Tem certeza que voce deseja Excluir o item?" hx-target="closest tr" hx-swap="outerHTML"><i class="btn bi bi-trash fs-4"></i></button>
-        <button class="btn" hx-get="{% url 'editar_produto' object.codigo_barras %}"><i class="btn bi bi-pencil-square fs-4"></i></button>        
+        <button class="btn" hx-delete="{% url 'deletar_produto' object.codigo_barras %}" hx-confirm="Tem certeza que voce deseja Excluir o item?" hx-target="closest tr" hx-swap="outerHTML"><i class="btn bi bi-trash fs-4"></i></button>                
     </td>
 </tr>

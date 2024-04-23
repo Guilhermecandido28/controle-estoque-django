@@ -7,5 +7,6 @@ urlpatterns = [
     path('', include('login.urls')),
     path('estoque/', include('estoque.urls')),
     path('clientes/', include('clientes.urls')),
+    path('vendas/', include('vendas.urls')),    
     path("__debug__/", include("debug_toolbar.urls")),
 ]

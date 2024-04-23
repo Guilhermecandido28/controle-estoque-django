@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'login.apps.LoginConfig',
     'estoque.apps.EstoqueConfig', 
-    'clientes.apps.ClientesConfig', 
+    'clientes.apps.ClientesConfig',
+    'vendas.apps.VendasConfig', 
     'rest_framework', 
     'django_filters',
     'rolepermissions'
@@ -77,6 +78,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'custom_filters': 'custom_tags.custom_filters',
+            },
         },
     },
 ]

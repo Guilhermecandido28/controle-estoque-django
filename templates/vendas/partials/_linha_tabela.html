@@ -1,0 +1,16 @@
+{% load static %}
+{% load custom_filters %}
+<tr
+    hx-target="this"
+    hx-swap="outerHTML"
+>    
+    <td>{{ item.codigo_barras }}</td>
+    <td>{{ item.descricao }}</td>    
+    <td>{{ item.tamanho }}</td>
+    <td>{{ item.cor }}</td>
+    <td class="quantidade">{{ quantidade }}</td>        
+    <td class="preco">{{ quantidade|multiply:item.venda|currency }}</td>    
+    <td>
+        <button class="btn" hx-delete="{ url 'deletar_produto' object.codigo_barras %}" hx-confirm="Tem certeza que voce deseja Excluir o item?" hx-target="closest tr" hx-swap="outerHTML"><i class="btn bi bi-trash fs-4"></i></button>                
+    </td>
+</tr>

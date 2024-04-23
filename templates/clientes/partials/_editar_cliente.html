@@ -31,13 +31,13 @@
             hx-post = "{% url 'update_edicao' object.id %}"
             hx-swap = "outerHTML" 
             hx-target = "#table-clientes"
-            id="btn1"           
+                       
             >Enviar</button>
             <button class="btn btn-outline-danger mx-3" 
                 hx-get="{% url 'last_cliente' %}" 
                 hx-target="#updatecliente" 
                 hx-swap="outerHTML"
-                id="btn2">
+                >
                 Ver Ultimo Cliente
             </button>
         </div>        

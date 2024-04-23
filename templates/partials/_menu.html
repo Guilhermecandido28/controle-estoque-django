@@ -1,7 +1,7 @@
 {% load static %}    
 <!-- Menu horizontal -->
 
-<body>
+
     <nav class="navbar navbar-expand-lg bg-body-tertiary rounded sticky-top" aria-label="Eleventh navbar example">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">JK Modas & Variedades</a>
@@ -16,16 +16,16 @@
                 <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
               </li>
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Navegar</a>
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="true">Navegar</a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="{% url 'estoque' %}">Estoque</a></li>
-                    <li><a class="dropdown-item" href="#">Vender</a></li>
+                    <li><a class="dropdown-item" href="{% url 'vendas' %}">Vender</a></li>
                     <li><a class="dropdown-item" href="{% url 'clientes' %}">Clientes</a></li>
                     <li><a class="dropdown-item" href="#">Fornecedor</a></li>
                     <li><a class="dropdown-item" href="#">Financeiro</a></li>
                     <li><a class="dropdown-item" href="#">Compras</a></li>
                     <li><a class="dropdown-item" href="#">Trocas</a></li>
-                    <li><a class="dropdown-item" href="#">Configurações</a></li>
+                    <li><a class="dropdown-item" href="#">Configurações</a></li>                    
                   </ul>
               </li>              
               <li class="nav-item dropdown">

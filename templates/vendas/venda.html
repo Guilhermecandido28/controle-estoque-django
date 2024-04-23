@@ -1,0 +1,209 @@
+{% extends 'partials/base.html'%}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+<div class="container-fluid py-5">        
+    <div class="row g-3 mx-5">
+        <div class="col-12 col-lg-12">
+            <button class="btn btn-success w-100 h-100" type="button" data-bs-toggle="modal" data-bs-target="#forma-pagamento">Finalizar Venda</button> 
+        </div>
+        <div class="col-12 col-lg-12">
+            <div class="bg-custom card h-100">
+                <div class="card-body d-flex justify-content-evenly align-items-center">
+                    <form class="d-flex" role="search">
+                        {% for field in filter.form %}
+                        <div class="input-group pe-5">
+                            {{ field }}
+                            <button class="btn btn-outline-secondary"
+                            type="submit"                            
+                            >
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                        {% endfor %}
+                        <!-- <div class="input-group pe-5">
+                            <input type="number" placeholder="Desconto %" class="form-control">
+                            <button class="btn btn-outline-success">
+                                <i class="bi bi-percent"></i>
+                            </button>
+                        </div> -->
+                        <div class="input-group pe-5">
+                            <input type="number" placeholder="Quantidade" class="form-control" min="1" value="1" name="quantidade" id="quantidade">
+                            <button class="btn btn-outline-success">
+                                Qtd
+                            </button>
+                        </div>
+                        <div class="input-group pe-5">
+                            <input type="text" placeholder="Cliente" class="form-control">
+                            <button class="btn btn-outline-secondary">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-12">
+            <div class="bg-custom card h-100">
+                <div class="card-body d-flex flex-column align-items-center table-responsive table-container" style="max-height: 500px; overflow-y: auto;">
+                    <table id="lista_item" class="table table-borderless align-middle">
+                        <thead>
+                          <tr>                                
+                            <th scope="col">Código de Barras</th>
+                            <th scope="col">Descrição</th>
+                            <th scope="col">Tamanho</th>
+                            <th scope="col">Cor</th>
+                            <th scope="col">Quantidade</th>
+                            <th scope="col">Preço</th>
+                            <th scope="col">Ação</th>
+                          </tr>
+                        </thead>
+                        {% include "vendas/partials/_table.html" %}
+                    </table>                    
+                    <div class="w-100 d-flex align-items-baseline justify-content-end">                        
+                        <span class="lead text-success fs-1 fw-semibold ms-5" id="total_geral">R$ 0,00</span>
+                    </div>
+                </div>                
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="bg-custom card h-100">
+                <div class="card-body">
+                  <h6 class="lead card-title text-center">PESQUISAR VENDA</h6>
+                  <form action="" class="row mb-3 g-2">
+                      <div class="col-12">
+                          <div class="form-floating my-3">
+                              <input type="text" class="form-control" id="descricao" placeholder=" ">
+                              <label for="descricao" class="form-label">Descrição</label>
+                          </div>
+                      </div>
+                      <div class="col-12">
+                          <div class="form-floating mb-3">
+                              <input type="text" class="form-control" id="categoria" placeholder=" ">
+                              <label for="categoria" class="form-label">Categoria</label>
+                          </div>
+                      </div>
+                      <div class="col-12">
+                          <div class="form-floating mb-3">
+                              <input type="text" class="form-control" id="cliente" placeholder=" ">
+                              <label for="cliente" class="form-label">Cliente</label>
+                          </div>
+                      </div>
+                      <div class="col-12">
+                          <div class="form-floating mb-3">
+                              <input type="date" class="form-control" id="categoria" placeholder=" ">
+                              <label for="categoria" class="form-label">Data</label>
+                          </div>
+                      </div>
+                      <div class="col-12">
+                          <div class="form-floating mb-3">
+                              <input type="text" class="form-control" id="tamanho" placeholder=" ">
+                              <label for="tamanho" class="form-label">Tamanho</label>
+                          </div>
+                      </div>
+                      <div class="col-12">
+                          <div class="form-floating mb-3">
+                              <input type="text" class="form-control" id="venda" placeholder=" ">
+                              <label for="venda" class="form-label">Preço de Venda</label>
+                          </div>
+                      </div>
+                      <div class="col-12">
+                          <button class="btn btn-outline-dark w-100 h-100">Pesquisar</button>
+                      </div>
+                  </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="bg-custom card h-100">
+                <div class="card-body">
+                  <h6 class="lead card-title text-center">CAIXA</h6>
+                  <form action="" class="row mb-3 g-2">
+                      <div class="col-12">
+                          <div class="form-floating my-3">
+                              <input type="number" class="form-control" id="valor-inicial" placeholder=" ">
+                              <label for="valor-inicial" class="form-label">Valor Inicial</label>
+                          </div>
+                      </div>
+                      <div class="col-12 mb-3">
+                        <button class="btn btn-outline-success w-100 h-100">Abrir Caixa</button>
+                    </div>
+                      <div class="col-12">
+                          <div class="form-floating mb-3">
+                              <input type="number" class="form-control" id="saida" placeholder=" ">
+                              <label for="saida" class="form-label">Saídas</label>
+                          </div>
+                      </div>
+                      <div class="col-12">
+                        <button class="btn btn-outline-danger w-100 h-100">Lançar Saída</button>
+                    </div>                         
+                  </form>                      
+                  <h4 class="card-title text-center mt-5">SALDO EM CAIXA</h4>
+                    <p class="fs-1 card-text text-center py-4 text-success">
+                        <span class="lead">R$</span>
+                          1536,00
+                          <span class="lead">un</span>
+                    </p>
+                </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-4">                
+            <div class="card h-100">
+              <div class="card-body ">
+                <h6 class="lead card-title text-center fs-4 fw-bold">Movimentações do Dia</h6>
+                <canvas id="dashbord1" class="col-12">                      
+                </canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-12">
+          <div class="bg-custom card h-100">
+              <div class="card-body d-flex flex-column align-items-center table-responsive table-container" style="max-height: 500px; overflow-y: auto;">
+                  <table class="table table-borderless align-middle" id="table">
+                      <thead>
+                        <tr>                                
+                          <th scope="col">Código de Barras</th>
+                          <th scope="col">Descrição</th>
+                          <th scope="col">Tamanho</th>
+                          <th scope="col">Cor</th>
+                          <th scope="col">Quantidade</th>
+                          <th scope="col">Preço</th>
+                          <th scope="col">Cliente</th>
+                          
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>                                
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>                                                                
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+          </div>
+      </div>
+    </div>    
+</div>
+{% include 'vendas/partials/_modal.html' %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/venda.js' %}"></script>
+<script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    })
+</script>
+<script>
+  window.onload = function(event){      
+      renderiza_grafico1()        
+  }
+  
+</script>
+
+
+{% endblock %}

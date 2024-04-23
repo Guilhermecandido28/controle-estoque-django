@@ -1,0 +1,67 @@
+{% load custom_filters %}
+{% load static %}
+<div class="modal fade" tabeindex="-1" id="forma-pagamento">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">                
+                <div class="main-container">
+                    <h2>Formas de Pagamento</h2>
+                    <div class="radio-buttons">
+                        <label class="custom-radio">
+                            <input type="radio" name="radio">
+                            <span class="radio-btn">
+                                <i class="bi bi-check2"></i>
+                                <div class="hobbies-icon">
+                                    <i class="bi bi-credit-card-fill"></i>
+                                    <h3>Cartão de Crédito</h3>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="radio-buttons">
+                        <label class="custom-radio">
+                            <input type="radio" name="radio">
+                            <span class="radio-btn"><i class="bi bi-check2"></i>
+                                <div class="hobbies-icon">
+                                    <i class="bi bi-credit-card"></i>
+                                    <h3>Cartão de Débito</h3>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="radio-buttons">
+                        <label class="custom-radio">
+                            <input type="radio" name="radio">
+                            <span class="radio-btn"><i class="bi bi-check2"></i>
+                                <div class="hobbies-icon">
+                                    <i class="bi bi-cash-coin"></i>
+                                    <h3>DINHEIRO</h3>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="radio-buttons">
+                        <label class="custom-radio">
+                            <input type="radio" name="radio">
+                            <span class="radio-btn"><i class="bi bi-check2"></i>
+                                <div class="hobbies-icon">
+                                    <i class="bi bi-send-plus-fill"></i>
+                                    <h3>PIX</h3>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+                </div>                        
+                <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3">
+                    <div><span id="total_geral"></span></div>                    
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-success w-100">FINALIZAR VENDA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
