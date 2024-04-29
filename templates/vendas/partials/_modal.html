@@ -7,59 +7,42 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">                
-                <div class="main-container">
-                    <h2>Formas de Pagamento</h2>
-                    <div class="radio-buttons">
-                        <label class="custom-radio">
-                            <input type="radio" name="radio">
-                            <span class="radio-btn">
-                                <i class="bi bi-check2"></i>
-                                <div class="hobbies-icon">
-                                    <i class="bi bi-credit-card-fill"></i>
-                                    <h3>Cartão de Crédito</h3>
+                <!-- template.html -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="main-container">
+                            <h2>Formas de Pagamento</h2>                        
+                            {% for radio in form.radio %}
+                                <div class="radio-buttons">
+                                    <label class="custom-radio">                                    
+                                        {{ radio.tag }}
+                                        <span class="radio-btn">
+                                            <i class="bi bi-check2"></i>
+                                            <div class="hobbies-icon">
+                                                <h3>{{ radio.choice_label }}<i class="bi bi-currency-dollar"></i></h3>
+                                            </div>
+                                        </span>
+                                    </label>
                                 </div>
-                            </span>
-                        </label>
-                    </div>
-                    <div class="radio-buttons">
-                        <label class="custom-radio">
-                            <input type="radio" name="radio">
-                            <span class="radio-btn"><i class="bi bi-check2"></i>
-                                <div class="hobbies-icon">
-                                    <i class="bi bi-credit-card"></i>
-                                    <h3>Cartão de Débito</h3>
+                            {% endfor %}                                              
+                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3">
+                                <div class="form-floating">
+                                    {{ form.cliente }}
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ form.cliente.label_tag }}</label>                            
                                 </div>
-                            </span>
-                        </label>
-                    </div>
-                    <div class="radio-buttons">
-                        <label class="custom-radio">
-                            <input type="radio" name="radio">
-                            <span class="radio-btn"><i class="bi bi-check2"></i>
-                                <div class="hobbies-icon">
-                                    <i class="bi bi-cash-coin"></i>
-                                    <h3>DINHEIRO</h3>
+                                <div class="form-floating">
+                                    {{ form.desconto }}
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ form.desconto.label_tag }}</label>                            
                                 </div>
-                            </span>
-                        </label>
-                    </div>
-                    <div class="radio-buttons">
-                        <label class="custom-radio">
-                            <input type="radio" name="radio">
-                            <span class="radio-btn"><i class="bi bi-check2"></i>
-                                <div class="hobbies-icon">
-                                    <i class="bi bi-send-plus-fill"></i>
-                                    <h3>PIX</h3>
-                                </div>
-                            </span>
-                        </label>
-                    </div>
-                </div>                        
-                <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3">
-                    <div><span id="total_geral"></span></div>                    
-                </div>
-                <div class="col-12">
-                    <button class="btn btn-success w-100">FINALIZAR VENDA</button>
+                            </div>
+                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3">
+                                <div><span id="total_geral"></span></div>                    
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" id="btnSalvarItens" class="btn btn-success w-100" data-bs-dismiss="modal" aria-label="Close" hx-post="{% url 'salvar_venda' %}" >FINALIZAR VENDA</button></a>
+                            </div>
+                        </div>
+                    </form>                       
                 </div>
             </div>
         </div>

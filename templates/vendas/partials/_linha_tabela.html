@@ -4,10 +4,10 @@
     hx-target="this"
     hx-swap="outerHTML"
 >    
-    <td>{{ item.codigo_barras }}</td>
-    <td>{{ item.descricao }}</td>    
-    <td>{{ item.tamanho }}</td>
-    <td>{{ item.cor }}</td>
+    <td class="codigo_barras">{{ item.codigo_barras }}</td>
+    <td class="descricao">{{ item.descricao }}</td>    
+    <td class="tamanho">{{ item.tamanho }}</td>
+    <td class="cor">{{ item.cor }}</td>
     <td class="quantidade">{{ quantidade }}</td>        
     <td class="preco">{{ quantidade|multiply:item.venda|currency }}</td>    
     <td>

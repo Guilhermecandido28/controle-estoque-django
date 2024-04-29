@@ -90,16 +90,16 @@ document.body.addEventListener('htmx:afterSwap', function(event) {
 // Função para atualizar o total no modal
 
 function atualizarTotalModal(total) {
-  console.log('Atualizando total no modal:', total);
+  // console.log('Atualizando total no modal:', total);
   var modalContent = document.querySelector('.modal-body');
   if (modalContent) {
-      console.log('Elemento modal-body encontrado');
+      // console.log('Elemento modal-body encontrado');
       // Limpar o conteúdo do elemento total_geral
       var totalElement = modalContent.querySelector('#total_geral');
       if (totalElement) {
           totalElement.innerHTML = '';
       } else {
-          console.log('Erro: Elemento total_geral não encontrado');
+          // console.log('Erro: Elemento total_geral não encontrado');
           return;
       }
 
@@ -111,30 +111,31 @@ function atualizarTotalModal(total) {
       // Adicionar o elemento do total ao elemento total_geral
       totalElement.appendChild(totalText);
 
-      console.log('Total atualizado no modal:', total.toFixed(2));
+      // console.log('Total atualizado no modal:', total.toFixed(2));
   } else {
-      console.log('Erro: Elemento modal-body não encontrado');
+      // console.log('Erro: Elemento modal-body não encontrado');
   }
 }
 
 
 // Chamar a função de atualizar o total do modal quando necessário
 document.body.addEventListener('htmx:afterSwap', function(event) {
-  console.log('Evento htmx:afterSwap disparado');
+  // console.log('Evento htmx:afterSwap disparado');
   var trigger = event.detail.elt;
-  console.log('Elemento que disparou o evento:', trigger)
+  // console.log('Elemento que disparou o evento:', trigger)
   if (trigger.id === 'lista_item') {
-      console.log('Modal de forma de pagamento exibido');
+      // console.log('Modal de forma de pagamento exibido');
       // Obter o total da venda do contexto ou de onde estiver disponível
       var totalVenda = parseFloat(document.getElementById('total_geral').textContent.replace('R$ ', ''));
-      console.log('Total da venda obtido:', totalVenda.toFixed(2));
+      // console.log('Total da venda obtido:', totalVenda.toFixed(2));
       if (!isNaN(totalVenda)) {
-          console.log('Total da venda obtido:', totalVenda.toFixed(2));
+          // console.log('Total da venda obtido:', totalVenda.toFixed(2));
           atualizarTotalModal(totalVenda);
       } else {
-          console.log('Erro: Não foi possível obter o total da venda');
+          // console.log('Erro: Não foi possível obter o total da venda');
       }
   }
 });
+
 
 
