@@ -1,0 +1,9 @@
+{% load custom_filters %}
+<p id="saldo_caixa" class="fs-1 card-text text-center py-4 text-success">
+    <span class="lead">R$</span>
+    {% if valor %}
+      {{ valor|currency }}
+    {% else %}
+    0,00
+    {% endif %}    
+</p>
