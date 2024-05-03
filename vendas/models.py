@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import F
 from datetime import datetime
 from clientes.models import Clientes
 
@@ -19,3 +20,25 @@ class Vendas(models.Model):
     
     def  __str__(self):
         return self.descricao
+
+    def save(self, *args, **kwargs):
+        # Verifica se o cliente está vazio ou não existe
+        if self.cliente_id is None or not Clientes.objects.filter(pk=self.cliente_id).exists():
+            # Se estiver vazio ou não existir, defina como None
+            self.cliente = None
+
+        super().save(*args, **kwargs)
+
+class Caixa(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    data = models.DateField(default=datetime.now)
+    valor_inicial = models.DecimalField(max_digits=6, decimal_places=2, default= 0)
+    saida = models.DecimalField(max_digits=6, decimal_places=2, default= 0, blank=True, null=True)
+    def saldo(self):
+        if self.saida is not None:
+            return self.valor_inicial - self.saida
+        else:
+            return self.valor_inicial
+
+    def __str__(self):
+        return f'Caixa do dia {self.data} fechou em {self.saldo}'

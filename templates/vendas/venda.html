@@ -115,29 +115,32 @@
                   <form action="" class="row mb-3 g-2">
                       <div class="col-12">
                           <div class="form-floating my-3">
-                              <input type="number" class="form-control" id="valor-inicial" placeholder=" ">
-                              <label for="valor-inicial" class="form-label">Valor Inicial</label>
+                            {{ caixa_form.valor_inicial }}
+                            <label for="{{ caixa_form.valor_inicial.id_for_label }}" class="form-label">Valor Inicial</label>
+                              <!-- <input type="number" class="form-control" id="valor-inicial" placeholder=" ">
+                              <label for="valor-inicial" class="form-label">Valor Inicial</label> -->
                           </div>
                       </div>
                       <div class="col-12 mb-3">
-                        <button class="btn btn-outline-success w-100 h-100">Abrir Caixa</button>
+                        <button hx-post="{% url 'abrir_caixa' %}" hx-swap="outerHTML" hx-target="#saldo_caixa" class="btn btn-outline-success w-100 h-100">Abrir Caixa</button>
                     </div>
                       <div class="col-12">
                           <div class="form-floating mb-3">
-                              <input type="number" class="form-control" id="saida" placeholder=" ">
-                              <label for="saida" class="form-label">Saídas</label>
+                            {{ caixa_form.saida }}
+                            <label for="{{ caixa_form.saidas.id_for_label }}" class="form-label">Saídas</label>
                           </div>
                       </div>
                       <div class="col-12">
-                        <button class="btn btn-outline-danger w-100 h-100">Lançar Saída</button>
+                        <button hx-post="{% url 'lancar_saida' %}" hx-swap="outerHTML" hx-target="#saldo_caixa" class="btn btn-outline-danger w-100 h-100">Lançar Saída</button>
                     </div>                         
                   </form>                      
                   <h4 class="card-title text-center mt-5">SALDO EM CAIXA</h4>
-                    <p class="fs-1 card-text text-center py-4 text-success">
+                    {% include 'vendas/partials/caixa_valor_inicial.html' %}
+                    <!-- <p id="saldo_caixa" class="fs-1 card-text text-center py-4 text-success">
                         <span class="lead">R$</span>
                           1536,00
-                          <span class="lead">un</span>
-                    </p>
+                        <span class="lead">un</span>
+                    </p> -->
                 </div>
             </div>
           </div>
@@ -155,27 +158,30 @@
               <div class="card-body d-flex flex-column align-items-center table-responsive table-container" style="max-height: 500px; overflow-y: auto;">
                   <table class="table table-borderless align-middle" id="table">
                       <thead>
-                        <tr>                                
-                          <th scope="col">Código de Barras</th>
-                          <th scope="col">Descrição</th>
-                          <th scope="col">Tamanho</th>
-                          <th scope="col">Cor</th>
-                          <th scope="col">Quantidade</th>
-                          <th scope="col">Preço</th>
+                        <tr>                               
+                            <th scope="col">Data</th>
+                          <th scope="col">Descrição da Venda</th>
+                          <th scope="col">Forma de Pagamento</th>
+                          <th scope="col">Desconto</th>                         
+                          <th scope="col">Total</th>
                           <th scope="col">Cliente</th>
                           
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>                                
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>                                                                
-                        </tr>
-                      </tbody>
+                            {% if object_venda %}
+                                {% for item in object_venda %}                                
+                                <tr>   
+                                    <td>{{ item.data }}</td> 
+                                    <td>{{ item.descricao|safe }}</td>
+                                    <td>{{ item.forma_pagamento }}</td>    
+                                    <td>{{ item.desconto }}%</td>
+                                    <td>{{ item.total|currency }}</td>
+                                    <td>{{ item.cliente}}</td>
+                                </tr>
+                                {% endfor %}
+                            {% endif %}
+                      </tbody>                      
                     </table>
                   </div>
           </div>
@@ -196,6 +202,7 @@
   }
   
 </script>
+
 
 
 {% endblock %}

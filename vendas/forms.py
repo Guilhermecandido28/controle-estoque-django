@@ -1,6 +1,7 @@
 # forms.py
 from django import forms
 from clientes.models import Clientes
+from .models import Caixa
 
 class VendaForms(forms.Form):    
     cliente = forms.ModelChoiceField(
@@ -16,3 +17,17 @@ class VendaForms(forms.Form):
     ]
     
     radio = forms.ChoiceField(choices=FORMAS_DE_PAGAMENTO, widget=forms.RadioSelect)
+
+
+class CaixaForms(forms.ModelForm):
+    class Meta:
+        model = Caixa
+        fields = ['valor_inicial', 'saida']  # Lista dos campos do modelo que deseja incluir no formulário
+        widgets = {
+            'valor_inicial': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': ' ', 'id': 'valor_inicial'}),
+            'saida': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': ' ', 'id': 'saidas'})
+        }
+        labels = {
+            'valor_inicial': 'Valor Inicial',
+            'saida': 'Saídas'
+        }
