@@ -44,11 +44,13 @@ class Estoque(models.Model):
 
     def save(self, *args, **kwargs):
         # Verificar se já existe um Estoque com o mesmo código de barras
-        while Estoque.objects.filter(codigo_barras=self.codigo_barras).exists():
-            self.codigo_barras = gerar_ean13()  # Gerar um novo código de barras único
-        
-
+        if not self.pk and not self.codigo_barras:
+            # Se é uma nova instância e ainda não tem código de barras, gerar um
+            self.codigo_barras = gerar_ean13()
+        elif not self.pk:
+            # Se é uma nova instância e já tem código de barras, verificar se já existe no banco de dados
+            while Estoque.objects.filter(codigo_barras=self.codigo_barras).exists():
+                self.codigo_barras = gerar_ean13()  # Gerar um novo código de barras único
 
         super().save(*args, **kwargs)
-
 
