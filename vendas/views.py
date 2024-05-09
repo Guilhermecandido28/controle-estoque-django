@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseBadRequest, HttpResponse, JsonResponse
-from .filters import CodBarrasFilter
+from .filters import CodBarrasFilter, VendasFilter
 from estoque.models import Estoque
 from .models import Vendas, Caixa
 from clientes.models import Clientes
@@ -17,7 +17,9 @@ lista_preco = []
 def venda(request):
     form = VendaForms()
     form_caixa = CaixaForms() 
-    object_vendas = Vendas.objects.all()    
+    object_vendas = Vendas.objects.all()
+    object_filter_vendas = Vendas.objects.select_related('descricao', 'cliente', 'data', 'total') 
+    filter_vendas = VendasFilter(request.GET, queryset=object_filter_vendas) 
     
     # Verificando se há registros no caixa
     ultimo_caixa = Caixa.objects.last()
@@ -35,7 +37,7 @@ def venda(request):
         item.descricao = item.descricao.replace(';', '<br>') 
     object = Estoque.objects.select_related('descricao').all()
     object_filter = CodBarrasFilter(request.GET, queryset=object)    
-    context = {'filter': object_filter, 'form':form, 'object_venda': object_vendas, 'caixa_form': form_caixa, 'valor': valor}
+    context = {'filter': object_filter, 'form':form, 'object_venda': object_vendas, 'caixa_form': form_caixa, 'valor': valor, 'filtro_venda': filter_vendas}
     return render(request, 'vendas/venda.html', context)
 
 
@@ -149,6 +151,7 @@ def caixa_valor_inicial(request):
    
 
 def caixa_lancar_saida(request):
+
     if request.method == 'POST':
           
         ultimo_caixa = Caixa.objects.last()
@@ -164,6 +167,13 @@ def caixa_lancar_saida(request):
                 valor = ultimo_caixa.saldo()
                 context = {'valor': valor}
                 return render(request, 'vendas/partials/caixa_valor_inicial.html', context)
+            
+def pesquisar_vendas(request):
+    filtro = VendasFilter(request.POST, queryset=Vendas.objects.all())
+    object_vendas = filtro.qs
+    template_name = 'vendas/partials/_table_vendas.html'    
+    context = {'object_venda': object_vendas, 'filtro': filtro}        
+    return render(request, template_name, context)
 
 
 
