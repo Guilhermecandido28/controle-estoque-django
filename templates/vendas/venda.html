@@ -1,6 +1,7 @@
 {% extends 'partials/base.html'%}
 {% load static %}
 {% load custom_filters %}
+{% load permission_tags %}
 {% block content %}
 <div class="container-fluid py-5">        
     <div class="row g-3 mx-5">
@@ -65,44 +66,16 @@
                 <div class="card-body">
                   <h6 class="lead card-title text-center">PESQUISAR VENDA</h6>
                   <form action="" class="row mb-3 g-2">
+                    {% for field in filtro_venda.form %}
                       <div class="col-12">
                           <div class="form-floating my-3">
-                              <input type="text" class="form-control" id="descricao" placeholder=" ">
-                              <label for="descricao" class="form-label">Descrição</label>
+                              {{ field }}
+                              <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                           </div>
                       </div>
+                    {% endfor %}
                       <div class="col-12">
-                          <div class="form-floating mb-3">
-                              <input type="text" class="form-control" id="categoria" placeholder=" ">
-                              <label for="categoria" class="form-label">Categoria</label>
-                          </div>
-                      </div>
-                      <div class="col-12">
-                          <div class="form-floating mb-3">
-                              <input type="text" class="form-control" id="cliente" placeholder=" ">
-                              <label for="cliente" class="form-label">Cliente</label>
-                          </div>
-                      </div>
-                      <div class="col-12">
-                          <div class="form-floating mb-3">
-                              <input type="date" class="form-control" id="categoria" placeholder=" ">
-                              <label for="categoria" class="form-label">Data</label>
-                          </div>
-                      </div>
-                      <div class="col-12">
-                          <div class="form-floating mb-3">
-                              <input type="text" class="form-control" id="tamanho" placeholder=" ">
-                              <label for="tamanho" class="form-label">Tamanho</label>
-                          </div>
-                      </div>
-                      <div class="col-12">
-                          <div class="form-floating mb-3">
-                              <input type="text" class="form-control" id="venda" placeholder=" ">
-                              <label for="venda" class="form-label">Preço de Venda</label>
-                          </div>
-                      </div>
-                      <div class="col-12">
-                          <button class="btn btn-outline-dark w-100 h-100">Pesquisar</button>
+                          <button class="btn btn-outline-dark w-100 h-100" type="submit" hx-post="{% url 'pesquisar_venda' %}" hx-target="#table_vendas" hx-swap="outerHTML">Pesquisar</button>
                       </div>
                   </form>
                 </div>
@@ -112,28 +85,17 @@
             <div class="bg-custom card h-100">
                 <div class="card-body">
                   <h6 class="lead card-title text-center">CAIXA</h6>
+                  {% if user|has_role:'gerente' %}
+                    <form action="" class="row mb-3 g-2">
+                      {% include 'vendas/partials/_caixa_template.html' with botoes_habilitados=True %}
+                                                 
+                    </form>
+                  {% else %}
+                  <p class="lead card-title text-center fs-4">Peça a um gerente para movimentar o caixa</p>
                   <form action="" class="row mb-3 g-2">
-                      <div class="col-12">
-                          <div class="form-floating my-3">
-                            {{ caixa_form.valor_inicial }}
-                            <label for="{{ caixa_form.valor_inicial.id_for_label }}" class="form-label">Valor Inicial</label>
-                              <!-- <input type="number" class="form-control" id="valor-inicial" placeholder=" ">
-                              <label for="valor-inicial" class="form-label">Valor Inicial</label> -->
-                          </div>
-                      </div>
-                      <div class="col-12 mb-3">
-                        <button hx-post="{% url 'abrir_caixa' %}" hx-swap="outerHTML" hx-target="#saldo_caixa" class="btn btn-outline-success w-100 h-100">Abrir Caixa</button>
-                    </div>
-                      <div class="col-12">
-                          <div class="form-floating mb-3">
-                            {{ caixa_form.saida }}
-                            <label for="{{ caixa_form.saidas.id_for_label }}" class="form-label">Saídas</label>
-                          </div>
-                      </div>
-                      <div class="col-12">
-                        <button hx-post="{% url 'lancar_saida' %}" hx-swap="outerHTML" hx-target="#saldo_caixa" class="btn btn-outline-danger w-100 h-100">Lançar Saída</button>
-                    </div>                         
-                  </form>                      
+                    {% include 'vendas/partials/_caixa_template.html' with botoes_habilitados=False %}                         
+                </form>
+                  {% endif %}                     
                   <h4 class="card-title text-center mt-5">SALDO EM CAIXA</h4>
                     {% include 'vendas/partials/caixa_valor_inicial.html' %}
                     <!-- <p id="saldo_caixa" class="fs-1 card-text text-center py-4 text-success">
@@ -148,40 +110,34 @@
             <div class="card h-100">
               <div class="card-body ">
                 <h6 class="lead card-title text-center fs-4 fw-bold">Movimentações do Dia</h6>
-                <canvas id="dashbord1" class="col-12">                      
-                </canvas>
+                {% if user|has_role:'gerente' %}
+                  <canvas id="dashbord1" class="col-12">                      
+                  </canvas>
+                {% else %}
+                <h6 class="lead card-title text-center fs-4">Você não tem permissão para ver isso</h6>
+                {% endif %}
               </div>
             </div>
           </div>
           <div class="col-12 col-lg-12">
           <div class="bg-custom card h-100">
               <div class="card-body d-flex flex-column align-items-center table-responsive table-container" style="max-height: 500px; overflow-y: auto;">
-                  <table class="table table-borderless align-middle" id="table">
+                  <table class="table table-borderless align-middle">
                       <thead>
                         <tr>                               
                             <th scope="col">Data</th>
-                          <th scope="col">Descrição da Venda</th>
-                          <th scope="col">Forma de Pagamento</th>
-                          <th scope="col">Desconto</th>                         
-                          <th scope="col">Total</th>
-                          <th scope="col">Cliente</th>
-                          
+                            <th scope="col">Descrição da Venda</th>
+                            <th scope="col">Forma de Pagamento</th>
+                            <th scope="col">Desconto</th>                         
+                            <th scope="col">Total</th>
+                            <th scope="col">Cliente</th>                          
                         </tr>
                       </thead>
-                      <tbody>
-                            {% if object_venda %}
-                                {% for item in object_venda %}                                
-                                <tr>   
-                                    <td>{{ item.data }}</td> 
-                                    <td>{{ item.descricao|safe }}</td>
-                                    <td>{{ item.forma_pagamento }}</td>    
-                                    <td>{{ item.desconto }}%</td>
-                                    <td>{{ item.total|currency }}</td>
-                                    <td>{{ item.cliente}}</td>
-                                </tr>
-                                {% endfor %}
-                            {% endif %}
-                      </tbody>                      
+                      {% if user|has_role:'gerente' %}
+                        {% include 'vendas/partials/_table_vendas.html' %}
+                      {% else %}
+                      <p>Você não tem permissão para ver isso</p>
+                      {% endif %}                      
                     </table>
                   </div>
           </div>

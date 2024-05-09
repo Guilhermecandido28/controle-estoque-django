@@ -1,0 +1,18 @@
+<div class="col-12">
+    <div class="form-floating my-3">
+      {{ caixa_form.valor_inicial }}
+      <label for="{{ caixa_form.valor_inicial.id_for_label }}" class="form-label">Valor Inicial</label>
+    </div>
+</div>
+<div class="col-12 mb-3">
+  <button hx-post="{% url 'abrir_caixa' %}" hx-swap="outerHTML" hx-target="#saldo_caixa" class="btn btn-outline-success w-100 h-100" {% if not botoes_habilitados %} disabled {% endif %}>Abrir Caixa</button>
+</div>
+<div class="col-12">
+    <div class="form-floating mb-3">
+      {{ caixa_form.saida }}
+      <label for="{{ caixa_form.saidas.id_for_label }}" class="form-label">Saídas</label>
+    </div>
+</div>
+<div class="col-12">
+  <button hx-post="{% url 'lancar_saida' %}" hx-swap="outerHTML" hx-target="#saldo_caixa" class="btn btn-outline-danger w-100 h-100" {% if not botoes_habilitados %} disabled {% endif %}>Lançar Saída</button>
+</div>
