@@ -1,0 +1,15 @@
+{% load custom_filters %}
+<tbody id="table_vendas">
+    {% if object_venda %}
+        {% for item in object_venda %}                                
+        <tr>   
+            <td>{{ item.data }}</td> 
+            <td>{{ item.descricao|safe }}</td>
+            <td>{{ item.forma_pagamento }}</td>    
+            <td>{{ item.desconto }}%</td>
+            <td>{{ item.total|currency }}</td>
+            <td>{{ item.cliente}}</td>
+        </tr>
+        {% endfor %}
+    {% endif %}
+</tbody>
