@@ -43,11 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'home.apps.HomeConfig',
     'login.apps.LoginConfig',
     'estoque.apps.EstoqueConfig', 
     'clientes.apps.ClientesConfig',
-    'vendas.apps.VendasConfig', 
+    'vendas.apps.VendasConfig',
+    'vendedores.apps.VendedoresConfig', 
     'rest_framework', 
     'django_filters',
     'rolepermissions'
@@ -61,7 +63,12 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',    
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware'    
+]
+
+INTERNAL_IPS = [
+    '127.0.0.1',
 ]
 
 ROOT_URLCONF = 'setup.urls'
