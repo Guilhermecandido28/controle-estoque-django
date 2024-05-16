@@ -1,5 +1,6 @@
 from django import template
 import locale
+from decimal import Decimal, InvalidOperation
 
 register = template.Library()
 
@@ -13,7 +14,15 @@ def multiply(value, arg):
 
 @register.filter(name='currency')
 def currency(value):
-    return locale.currency(float(value))
+    
+    if value in (None, '', 'NaN'):
+        return 'N/A'
+    try:
+        value = float(value) if isinstance(value, (str, Decimal)) else value
+        return locale.currency(value, grouping=True)
+    except (ValueError, TypeError, InvalidOperation) as e:
+        print(f"Erro ao converter valor: {e}")
+        return 'N/A'
 
 @register.filter(name='venda')
 def vis_venda(string):
