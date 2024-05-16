@@ -6,7 +6,7 @@ from .models import Vendas, Caixa
 from clientes.models import Clientes
 from .forms import VendaForms, CaixaForms
 from datetime import datetime, date
-
+from vendedores.models import Vendedores
 
 from .functions import ajustar_estoque
 from django.db.models.aggregates import Sum
@@ -77,7 +77,13 @@ def salvar_venda(request):
         descricao = [', '.join(tupla) for tupla in valores]
         descricao = '; '.join(descricao)
         print(descricao)
-        
+        vendedor_id = request.POST.get('vendedor')
+        try:
+            vendedor = Vendedores.objects.get(id=vendedor_id)
+            vendedor.produtos_vendidos += len(lista_preco)
+            vendedor.save()
+        except:
+            vendedor = None
         cliente_id = request.POST.get('cliente')
         try:
             cliente = Clientes.objects.get(pk=cliente_id)
@@ -95,8 +101,6 @@ def salvar_venda(request):
         
         data = datetime.now()
         desconto_decimal = Decimal(str(desconto))
-
-# Perform the calculation
         
         total = sum(item['total'] for item in lista_preco)
         total = total - (total * desconto_decimal / Decimal(100))
