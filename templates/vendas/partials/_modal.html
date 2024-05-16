@@ -25,21 +25,29 @@
                                     </label>
                                 </div>
                             {% endfor %}                                              
-                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3">
+                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3 col-5 p-2">
                                 <div class="form-floating">
                                     {{ form.cliente }}
                                     <label for="{{ field.id_for_label }}" class="form-label">{{ form.cliente.label_tag }}</label>                            
                                 </div>
+                            </div>
+                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3 col-5 p-2">
                                 <div class="form-floating">
                                     {{ form.desconto }}
                                     <label for="{{ field.id_for_label }}" class="form-label">{{ form.desconto.label_tag }}</label>                            
+                                </div>
+                            </div>
+                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3 col-12"></div>
+                                <div class="form-floating">
+                                    {{ form.vendedor }}
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ form.vendedor.label_tag }}</label>                            
                                 </div>
                             </div>
                             <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3">
                                 <div><span id="total_geral"></span></div>                    
                             </div>
                             <div class="col-12">
-                                <button onclick="deleteRows()" type="submit" id="btnSalvarItens" class="btn btn-success w-100" data-bs-dismiss="modal" aria-label="Close" hx-post="{% url 'salvar_venda' %}" >FINALIZAR VENDA</button></a>
+                                <button onclick="deleteRows()" type="submit" id="btnSalvarItens" class="btn btn-success w-100 mb-3" data-bs-dismiss="modal" aria-label="Close" hx-post="{% url 'salvar_venda' %}" >FINALIZAR VENDA</button></a>
                             </div>
                         </div>
                     </form>                       

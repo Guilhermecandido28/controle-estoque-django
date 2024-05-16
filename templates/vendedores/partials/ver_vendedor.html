@@ -1,0 +1,18 @@
+{% load custom_filters %}
+<div class="col-12 h-100" id="ver-vendedor">
+    <div class="bg-custom card h-100">
+      <div class="card-body">
+          <div class="img-rounded mx-auto my-3" style="width: 200px; height: 200px;">        
+              <img src="{{ obj.foto }}"
+              class="img-fluid">
+              
+          </div>
+          <div class="text-center mb-4"><p class="lead">Nome: {{ obj.nome }}</p></div>
+          <div class="text-center mb-4"><p class="lead">Salário: {{ obj.salario|currency }}</p></div>
+          <div class="text-center mb-4"><p class="lead">Produtos Vendidos no Mês: {{ obj.produtos_vendidos }} un</p></div>
+          <div class="text-center mb-4"><p class="lead">Comissao: {{ obj.comissao|currency }}</p></div>  
+          <div class="text-center"><p class="lead">Férias: {{ obj.ferias }}</p></div>
+                         
+      </div>
+    </div>
+  </div>

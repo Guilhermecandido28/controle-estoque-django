@@ -4,10 +4,7 @@
 {% load permission_tags %}
 {% block content %}
 <div class="container-fluid py-5">        
-    <div class="row g-3 mx-5">
-        <div class="col-12 col-lg-12">
-            <button class="btn btn-success w-100 h-100" type="button" data-bs-toggle="modal" data-bs-target="#forma-pagamento">Finalizar Venda</button> 
-        </div>
+    <div class="row g-3 mx-5">        
         <div class="col-12 col-lg-12">
             <div class="bg-custom card h-100">
                 <div class="card-body d-flex justify-content-evenly align-items-center">
@@ -16,8 +13,7 @@
                         <div class="input-group pe-5">
                             {{ field }}
                             <button class="btn btn-outline-secondary"
-                            type="submit"                            
-                            >
+                            type="submit">
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
@@ -33,14 +29,15 @@
                             <button class="btn btn-outline-success">
                                 Qtd
                             </button>
-                        </div>                        
+                        </div>                                                
                     </form>
+                  <button class="btn btn-success w-25 h-100" type="button" data-bs-toggle="modal" data-bs-target="#forma-pagamento">Finalizar Venda</button>
                 </div>
             </div>
-        </div>
+        </div>        
         <div class="col-12 col-lg-12">
             <div class="bg-custom card h-100">
-                <div class="card-body d-flex flex-column align-items-center table-responsive table-container" style="max-height: 500px; overflow-y: auto;">
+                <div class="card-body d-flex flex-column align-items-center table-responsive table-container" style="min-height: 200px; max-height: 500px; overflow-y: auto;">
                     <table id="lista_item" class="table table-borderless align-middle">
                         <thead>
                           <tr>                                
@@ -60,6 +57,9 @@
                     </div>
                 </div>                
             </div>
+        </div>
+        <div class="col-12 col-lg-12">
+           
         </div>
         <div class="col-12 col-lg-4">
             <div class="bg-custom card h-100">
@@ -97,12 +97,7 @@
                 </form>
                   {% endif %}                     
                   <h4 class="card-title text-center mt-5">SALDO EM CAIXA</h4>
-                    {% include 'vendas/partials/caixa_valor_inicial.html' %}
-                    <!-- <p id="saldo_caixa" class="fs-1 card-text text-center py-4 text-success">
-                        <span class="lead">R$</span>
-                          1536,00
-                        <span class="lead">un</span>
-                    </p> -->
+                    {% include 'vendas/partials/caixa_valor_inicial.html' %}                    
                 </div>
             </div>
           </div>
@@ -121,7 +116,7 @@
           </div>
           <div class="col-12 col-lg-12">
           <div class="bg-custom card h-100">
-              <div class="card-body d-flex flex-column align-items-center table-responsive table-container" style="max-height: 500px; overflow-y: auto;">
+              <div class="card-body d-flex flex-column align-items-center table-responsive table-container" style="min-height: 200px; max-height: 500px; overflow-y: auto;">
                   <table class="table table-borderless align-middle">
                       <thead>
                         <tr>                               
