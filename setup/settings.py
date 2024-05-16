@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'vendedores.apps.VendedoresConfig', 
     'rest_framework', 
     'django_filters',
-    'rolepermissions'
+    'rolepermissions',    
     
 ]
 
@@ -93,6 +93,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'setup.wsgi.application'
+
 
 
 # Database

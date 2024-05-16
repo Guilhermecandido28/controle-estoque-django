@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.core.serializers.json import DjangoJSONEncoder
 
+
 def clientes(request):
     if request.user.is_authenticated:
         object = Clientes.objects.all()

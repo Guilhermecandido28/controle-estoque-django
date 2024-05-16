@@ -1,7 +1,7 @@
 function renderiza_grafico1() {
   const ctx = document.getElementById('dashbord1').getContext('2d');
 
-  // Realiza uma solicitação AJAX para obter os dados da movimentação do dia
+  
   fetch('movimentacao_dia')
       .then(response => response.json())
       .then(data => {
@@ -12,7 +12,7 @@ function renderiza_grafico1() {
               'DINHEIRO': 'red'
           };
 
-          // Extrai as formas de pagamento e os totais de vendas do retorno da API
+          
           const formas_pagamento = {};
           const totais_vendas = {};
           data.forEach(item => {

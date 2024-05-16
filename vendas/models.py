@@ -17,7 +17,9 @@ class Vendas(models.Model):
     forma_pagamento = models.CharField(max_length=50, choices=FORMAS_DE_PAGAMENTO)
     total = models.DecimalField(max_digits=20, decimal_places=2, default = 1)    
     data = models.DateField(default=datetime.now)
-    
+    class Meta:
+        verbose_name = 'Venda'
+        verbose_name_plural = 'Vendas'
     def  __str__(self):
         return self.descricao
 
