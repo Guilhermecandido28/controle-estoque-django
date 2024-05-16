@@ -7,7 +7,7 @@ class Clientes(models.Model):
     telefone = models.CharField(max_length=15, default='Não Possui')
     email = models.EmailField(max_length=50, default='NPossui@email.com')
     instagram = models.CharField(max_length=50, default='Não Possui')
-    url_instagram = models.URLField(blank=True)
+    url_instagram = models.URLField(blank=True, default="https://xsgames.co/randomusers/avatar.php?g=pixel")
 
     def __str__(self):
         return self.nome
