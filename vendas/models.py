@@ -1,7 +1,8 @@
 from django.db import models
-from django.db.models import F
+from django.utils import timezone
 from datetime import datetime
 from clientes.models import Clientes
+from vendedores.models import Vendedores
 
 class Vendas(models.Model):
     FORMAS_DE_PAGAMENTO = [
@@ -13,10 +14,11 @@ class Vendas(models.Model):
     id = models.AutoField(primary_key=True, unique=True) 
     descricao = models.CharField(max_length=1300, default='', null=False, blank=False)
     cliente = models.ForeignKey(Clientes, on_delete=models.SET_NULL, default=None, null=True)
-    desconto = models.IntegerField(default=0)        
+    desconto = models.IntegerField(default=0)
+    vendedor = models.ForeignKey(Vendedores, on_delete=models.CASCADE, null=False, blank=False)        
     forma_pagamento = models.CharField(max_length=50, choices=FORMAS_DE_PAGAMENTO)
     total = models.DecimalField(max_digits=20, decimal_places=2, default = 1)    
-    data = models.DateField(default=datetime.now)
+    data = models.DateField(default=timezone.now)
     class Meta:
         verbose_name = 'Venda'
         verbose_name_plural = 'Vendas'
@@ -44,3 +46,4 @@ class Caixa(models.Model):
 
     def __str__(self):
         return f'Caixa do dia {self.data} fechou em {self.saldo}'
+    

@@ -71,46 +71,54 @@ def inserir_venda(request):
 
 def salvar_venda(request):    
     if request.method == 'POST':
-        print("Dados do formulário POST recebidos:", request.POST)       
-        
+             
+       
         valores = [(item['codigo_barras'], item['descricao'], item['tamanho'], item['cor']) for item in lista_preco]
         descricao = [', '.join(tupla) for tupla in valores]
         descricao = '; '.join(descricao)
-        print(descricao)
+        
         vendedor_id = request.POST.get('vendedor')
+        
         try:
-            vendedor = Vendedores.objects.get(id=vendedor_id)
-            vendedor.produtos_vendidos += len(lista_preco)
-            vendedor.save()
+            vendedores = Vendedores.objects.get(id=vendedor_id)
+            vendedores.produtos_vendidos += len(lista_preco)
+            vendedores.save()
         except:
-            vendedor = None
+            
+            vendedores = None
         cliente_id = request.POST.get('cliente')
+        
         try:
-            cliente = Clientes.objects.get(pk=cliente_id)
-        except:
+             cliente = Clientes.objects.get(pk=cliente_id)
+        except Exception as e:
+            
             cliente = None
         
-        
         desconto = request.POST.get('desconto')
+        
+        
         if desconto == '':
             desconto = 0
-        
         
         forma_pagamento = request.POST.get('radio')
         
         
         data = datetime.now()
+        
+        
         desconto_decimal = Decimal(str(desconto))
         
         total = sum(item['total'] for item in lista_preco)
         total = total - (total * desconto_decimal / Decimal(100))
         
+        
         try:
-            Vendas.objects.create(descricao=descricao, cliente=cliente, desconto=desconto, forma_pagamento=forma_pagamento, data=data, total=total)
+            Vendas.objects.create(descricao=descricao, cliente=cliente, desconto=desconto, forma_pagamento=forma_pagamento, data=data, total=total, vendedor=vendedores)
             ajustar_estoque(lista_preco)            
             lista_preco.clear()            
             return HttpResponse(status=200)
-        except Exception as e:            
+        except Exception as e:
+            print("Erro ao criar venda:", e)           
             # Redireciona para a página anterior (com mensagem de erro)
             return HttpResponseBadRequest("Erro de validação: {}".format(e))
         
@@ -137,21 +145,19 @@ def movimentacao_dia(request):
 
 def caixa_valor_inicial(request):
     valor = request.POST.get('valor_inicial')       
-    print("Entrou na view")
+    
     if request.method == 'POST':
-        print("Recebido método POST")
+        
         form = CaixaForms(request.POST)
         if form.is_valid():
-            print("Formulário válido")
+            
             form.save()  # Salva os dados no banco de dados
-            print("Dados salvos no banco de dados")
-        else:
-            print('Erros de validação:', form.errors)
+        
         context = {'valor': valor}     
            
         return render(request, 'vendas/partials/caixa_valor_inicial.html', context)
-    else:
-        print("Formulário inválido")
+   
+        
    
 
 def caixa_lancar_saida(request):

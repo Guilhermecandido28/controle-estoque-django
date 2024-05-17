@@ -61,18 +61,23 @@
   </div>
   <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>-->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
-    <script> 
+<script> 
 
-      document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {          
-          
-          dateClick: function() {
-  alert('a day has been clicked!');
-}
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: 'evento_venda_calendario/',  // URL do endpoint que retorna os eventos
+            dateClick: function(info) {
+                alert('a day has been clicked: ' + info.dateStr);
+            },
+            eventClick: function(info) {
+            alert('Title: ' + info.event.title + '\nStart: ' + info.event.start);
+            
+        }
         });
         calendar.render();
-      });
+    });
 
-    </script>
+</script>
 {% endblock %}
