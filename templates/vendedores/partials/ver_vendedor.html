@@ -9,7 +9,7 @@
           </div>
           <div class="text-center mb-4"><p class="lead">Nome: {{ obj.nome }}</p></div>
           <div class="text-center mb-4"><p class="lead">Salário: {{ obj.salario|currency }}</p></div>
-          <div class="text-center mb-4"><p class="lead">Produtos Vendidos no Mês: {{ obj.produtos_vendidos }} un</p></div>
+          <div class="text-center mb-4"><p class="lead">Produtos Vendidos no Mês: {{ obj.total_em_vendas|currency }}</p></div>
           <div class="text-center mb-4"><p class="lead">Comissao: {{ obj.comissao|currency }}</p></div>  
           <div class="text-center"><p class="lead">Férias: {{ obj.ferias }}</p></div>
                          

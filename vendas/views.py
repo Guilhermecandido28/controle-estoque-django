@@ -71,53 +71,35 @@ def inserir_venda(request):
 
 def salvar_venda(request):    
     if request.method == 'POST':
-             
-       
         valores = [(item['codigo_barras'], item['descricao'], item['tamanho'], item['cor']) for item in lista_preco]
         descricao = [', '.join(tupla) for tupla in valores]
-        descricao = '; '.join(descricao)
-        
-        vendedor_id = request.POST.get('vendedor')
-        
-        try:
-            vendedores = Vendedores.objects.get(id=vendedor_id)
-            vendedores.produtos_vendidos += len(lista_preco)
-            vendedores.save()
-        except:
-            
-            vendedores = None
-        cliente_id = request.POST.get('cliente')
-        
+        descricao = '; '.join(descricao)       
+        vendedor_id = request.POST.get('vendedor')                
+        vendedores = Vendedores.objects.get(id=vendedor_id)            
+        cliente_id = request.POST.get('cliente')        
         try:
              cliente = Clientes.objects.get(pk=cliente_id)
-        except Exception as e:
-            
+        except Exception as e:            
             cliente = None
         
-        desconto = request.POST.get('desconto')
-        
-        
+        desconto = request.POST.get('desconto') 
         if desconto == '':
             desconto = 0
         
-        forma_pagamento = request.POST.get('radio')
-        
-        
-        data = datetime.now()
-        
-        
-        desconto_decimal = Decimal(str(desconto))
-        
+        forma_pagamento = request.POST.get('radio')        
+        data = datetime.now()        
+        desconto_decimal = Decimal(str(desconto))        
         total = sum(item['total'] for item in lista_preco)
-        total = total - (total * desconto_decimal / Decimal(100))
-        
+        total = total - (total * desconto_decimal / Decimal(100))  
         
         try:
             Vendas.objects.create(descricao=descricao, cliente=cliente, desconto=desconto, forma_pagamento=forma_pagamento, data=data, total=total, vendedor=vendedores)
             ajustar_estoque(lista_preco)            
-            lista_preco.clear()            
+            lista_preco.clear()
+            print('venda terminada com sucesso')            
             return HttpResponse(status=200)
         except Exception as e:
+            lista_preco.clear()
             print("Erro ao criar venda:", e)           
             # Redireciona para a página anterior (com mensagem de erro)
             return HttpResponseBadRequest("Erro de validação: {}".format(e))
