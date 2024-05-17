@@ -51,8 +51,8 @@
             <div class="col-12">
                 <div class="bg-custom card h-100">
                     <div class="card-body">
-                        <div class="" id="calendar">
-                        </div>
+                        <div id="calendar"></div>
+                        
                     </div>
                 </div>
             </div>
@@ -64,20 +64,35 @@
 <script> 
 
 document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            events: 'evento_venda_calendario/',  // URL do endpoint que retorna os eventos
-            dateClick: function(info) {
-                alert('a day has been clicked: ' + info.dateStr);
-            },
-            eventClick: function(info) {
-            alert('Title: ' + info.event.title + '\nStart: ' + info.event.start);
-            
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'pt-br',  // Configura o calendário para português brasileiro
+        events: 'evento_venda_calendario/',  // URL do endpoint que retorna os eventos
+        dateClick: function(info) {
+            alert('Você clicou em: ' + info.dateStr.split('-').reverse().join('/'));
+        },
+        eventClick: function(info) {
+            var eventTitle = info.event.title;
+            var eventStart = new Date(info.event.start).toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+            alert('Título: ' + eventTitle + '\nInício: ' + eventStart);
+        },
+        eventTimeFormat: { // Configura a exibição do horário dos eventos
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
         }
-        });
-        calendar.render();
     });
+    calendar.render();
+});
+
 
 </script>
 {% endblock %}
