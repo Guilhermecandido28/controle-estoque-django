@@ -8,6 +8,7 @@ class Vendedores(models.Model):
     salario = models.DecimalField(max_digits=6, decimal_places=2, default=1)
     total_em_vendas = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     comissao = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    porcentegem_comissao = models.DecimalField(max_digits=6, decimal_places=2, default=1)
     ferias = models.DateField(default= timezone.now)
 
     class Meta:
