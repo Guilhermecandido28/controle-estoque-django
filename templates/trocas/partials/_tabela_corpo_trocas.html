@@ -1,0 +1,24 @@
+{% if object_vendedor %}
+
+    <tbody class="table-group-divider" id="lista_itens">
+        
+    {% for object in object_vendedor %}
+        {% include "trocas/partials/linha_tabela/_linha_tabela_vendedor.html" %}
+    {% endfor %}
+    </tbody>
+
+{% elif object_cliente_e_venda %}    
+    <tbody class="table-group-divider" id="lista_itens">        
+    {% for object in object_cliente_e_venda %}
+        {% include "trocas/partials/linha_tabela/_linha_tabela_cliente.html" %}
+    {% endfor %}
+    </tbody>
+    
+
+{% else %}
+    
+    <tbody class="table-group-divider" id="lista_itens">        
+        <p>Nenhum item encontrado</p>
+    </tbody> 
+    
+{% endif %}
