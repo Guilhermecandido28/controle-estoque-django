@@ -49,10 +49,12 @@ INSTALLED_APPS = [
     'estoque.apps.EstoqueConfig', 
     'clientes.apps.ClientesConfig',
     'vendas.apps.VendasConfig',
-    'vendedores.apps.VendedoresConfig', 
+    'vendedores.apps.VendedoresConfig',
+    'trocas.apps.TrocasConfig',  
     'rest_framework', 
     'django_filters',
-    'rolepermissions',    
+    'rolepermissions',
+      
     
 ]
 
