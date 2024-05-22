@@ -1,4 +1,4 @@
-
+{% load custom_filters %}
 <tr
     hx-target="this"
     hx-swap="outerHTML"
@@ -6,8 +6,8 @@
     <td>{{ object.data }}</td>
     <td>{{ object.descricao }}</td>
     <td>{{ object.cliente }}</td>
-    <td>{{ object.forma_pagamento }}</td>
-    <td>{{ object.desconto }}</td>
-    <td>{{ object.total }}</td>
+    <td>{{ object.forma_pagamento|forma_pagamento }}</td>
+    <td>{{ object.desconto }}%</td>
+    <td>{{ object.total|currency }}</td>
 
 </tr>

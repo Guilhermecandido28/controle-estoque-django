@@ -1,5 +1,5 @@
 
-
+{% load custom_filters %}
 <tr
     hx-target="this"
     hx-swap="outerHTML"
@@ -7,6 +7,6 @@
     <td>{{ object.data }}</td>
     <td>{{ object.vendedor }}</td>
     <td>{{ object.produto }}</td>
-    <td>{{ object.total }}</td>
+    <td>{{ object.total|currency }}</td>
 
 </tr>

@@ -23,10 +23,22 @@ def currency(value):
     except (ValueError, TypeError, InvalidOperation) as e:
         print(f"Erro ao converter valor: {e}")
         return 'N/A'
+    
+@register.filter(name='forma_pagamento')
+def forma_pagamento(string):
+    if string == 'CARTAO':
+        return 'Cartão de Crédito'
+    elif string == 'DEBITO':
+        return 'Cartão de Débito'
+    elif string == 'PIX':
+        return 'PIX'
+    else:
+        return 'Dinheiro'
+    
 
 @register.filter(name='venda')
 def vis_venda(string):
-    print(string)
+    
     sem_parenteses = string.strip('()')
     
     elementos = sem_parenteses.split(',')

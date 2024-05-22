@@ -5,7 +5,7 @@
         <tr>   
             <td>{{ item.data }}</td> 
             <td>{{ item.descricao|safe }}</td>
-            <td>{{ item.forma_pagamento }}</td>    
+            <td>{{ item.forma_pagamento|forma_pagamento }}</td>    
             <td>{{ item.desconto }}%</td>
             <td>{{ item.total|currency }}</td>
             <td>{{ item.cliente}}</td>

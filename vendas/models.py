@@ -6,7 +6,7 @@ from vendedores.models import Vendedores
 
 class Vendas(models.Model):
     FORMAS_DE_PAGAMENTO = [
-        ('CARTAO', 'Cartão de Crédito'),
+        ('CREDITO', 'Cartão de Crédito'),
         ('DEBITO', 'Cartão de Débito'),
         ('DINHEIRO', 'Dinheiro'),        
         ('PIX', 'PIX'),
