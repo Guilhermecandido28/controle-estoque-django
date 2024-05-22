@@ -15,7 +15,7 @@ def trocas(request):
 
 def pesquisa_por_vendedor(request):        
     filtro = TrocaVendedorFilter(request.POST, queryset=EventoVenda.objects.all())    
-    object_vendedor = filtro.qs
+    object_vendedor = filtro.qs    
     context = {
         'object_vendedor': object_vendedor,
         'filtro': filtro,
@@ -25,37 +25,32 @@ def pesquisa_por_vendedor(request):
     return render(request, template_name, context)
     
 
-def pesquisa_por_cliente_e_venda(request):       
-    # Imprimindo os dados recebidos na requisição POST
-    print("Dados da requisição POST:", request.POST)
-    
-    # Criação do filtro com os dados da requisição e queryset inicial
-    filtro = TrocaVendedorFilter(request.POST, queryset=Vendas.objects.all())    
-    
-    # Imprimindo o queryset inicial
-    print("Queryset inicial (Vendas.objects.all()):", Vendas.objects.all())
-    
-    # Aplicação do filtro e obtenção do queryset filtrado
+def pesquisa_por_cliente_e_venda(request):
+    cliente_id = request.POST.get('cliente')
+    data = request.POST.get('data')
+    id_venda = request.POST.get('id')
+    descricao = request.POST.get('descricao')
+
+    filtros = {}
+    if cliente_id:
+        filtros['cliente_id'] = cliente_id
+    if data:
+        filtros['data'] = data
+    if id_venda:
+        filtros['id'] = id_venda
+    if descricao:
+        filtros['descricao__icontains'] = descricao
+
+    filtro = TrocaVendaFilter(request.POST, queryset=Vendas.objects.filter(**filtros))
     object_cliente_e_venda = filtro.qs
-    
-    # Imprimindo o queryset após aplicação do filtro
-    print("Queryset após aplicação do filtro (filtro.qs):", object_cliente_e_venda)
-    
-    # Definindo o contexto a ser passado para o template
     context = {
         'object_vendedor': [],
         'filtro': filtro,
         'object_cliente_e_venda': object_cliente_e_venda,
     }    
-    
-    # Imprimindo o contexto antes de renderizar o template
-    print("Contexto para o template:", context)
-    
     template_name = 'trocas/partials/_tabela_cliente_venda.html'
 
-    # Renderizando o template com o contexto
     return render(request, template_name, context)
-
    
 
 
