@@ -6,14 +6,21 @@ from .forms import EditarForm, AddEstoqueForms, AddCategoriaForm, AddMarcaForm
 from .filters import EstoqueFilter
 from django.db.models import F
 from django.contrib import messages
+from django.http import JsonResponse
 
 
 
 def salvar_produtos(request):
     form = AddEstoqueForms(request.POST or None)
-    if form.is_valid():
-        obj = form.save()
-        return render(request, 'estoque/partials/_linha_tabela.html', {'object': obj})
+    if request.method == 'POST':
+        if form.is_valid():
+            obj = form.save()
+            return render(request, 'estoque/partials/_linha_tabela.html', {'object': obj})
+        else:
+            # Se o formulário não for válido, retorne uma resposta JSON com os erros
+            errors = form.errors.as_json()
+            return JsonResponse({'errors': errors}, status=400)
+
 
 @csrf_exempt
 @require_http_methods(['DELETE'])

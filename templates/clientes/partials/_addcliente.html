@@ -1,5 +1,5 @@
 <!-- <div hx-target="this" class="card-body d-flex flex-column justify-content-evenly align-items-center"> -->
-    <form id="substituir" class="row my-3 g-2 mx-auto" method="post">
+    <form id="substituir" class="row my-3 g-2 mx-auto needs-validation" novalidate method="post">
         {% csrf_token %}
         <div class="col-12 col-md-12 col-lg-6 col-xl-6">
             <div class="form-floating m-3">
@@ -31,7 +31,8 @@
                 hx-post="{% url 'updatecliente' %}"
                 hx-target="#table-clientes" 
                 hx-swap="afterbegin"                 
-                type="submit">
+                type="submit"
+                id="enviar-cliente">
                 Enviar
             </button>
             <button class="btn btn-outline-danger mx-3" 
@@ -42,4 +43,3 @@
             </button>
         </div>
     </form>
-<!-- </div> -->

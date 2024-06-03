@@ -48,15 +48,36 @@ function renderiza_grafico(){
   }
   
   
-  const btnToast = document.getElementById("btnToast"); //seleciono o botão
-  btnToast.addEventListener("click", () => { // no clique do botão
+  const btnSalvar = document.getElementById("btnToast");
+  btnSalvar.addEventListener("click", function(event) {
+      // Selecionando o formulário
+      const form = document.querySelector('.needs-validation');
+  
+      // Realizando a validação manualmente
+      if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+      }
+      
+      // Adicionando classes de validação do Bootstrap ao formulário
+      form.classList.add('was-validated');
+  
+      // Verificando se o formulário é válido
+      if (form.checkValidity() === true) {
+          // Se o formulário for válido, exibe o toast
+          exibirToast();
+      }
+  });
+  
+  // Função para exibir o toast
+  function exibirToast() {
       const descricao = document.getElementById("descricao").value;
       const quantidade = document.getElementById("quantidade").value;      
-      const toast = document.getElementById("toast"); // capturo o toast invisivel
+      const toast = document.getElementById("toast"); // capturo o toast invisível
       const container = document.getElementById("toastContainer"); // capturo o container
-      const novoToast = toast.cloneNode(true); // faço um clone do toast invisivelk
-      novoToast.lastElementChild.innerHTML = quantidade + " " + "unidade(s)" + " " + descricao + " " + "adicionado(a)! "; // muda a mensagem interna  com data
+      const novoToast = toast.cloneNode(true); // faço um clone do toast invisível
+      novoToast.lastElementChild.innerHTML = quantidade + " " + "unidade(s)" + " " + descricao + " " + "adicionado(a)! "; // muda a mensagem interna com data
       container.appendChild(novoToast); // coloco o novo toast no container
       const bsToast = new bootstrap.Toast(novoToast, {}); // aplico a função toast do bootstrap
       bsToast.show(); // mando mostrar
-  });
+  }

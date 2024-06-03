@@ -1,7 +1,8 @@
 from django.shortcuts import render, HttpResponse
 from .forms import ClienteForms
 from .models import Clientes
-from django.contrib import messages
+
+from django.http import JsonResponse
 
 
 
@@ -12,6 +13,7 @@ def addcliente(request):
         form = ClienteForms()
         context = {'form': form,'last_cliente': objeto_maior_id}
     return render(request, template, context)
+    
 
 def update_cliente(request):
     template = 'clientes/partials/_linha_tabela.html'
@@ -21,7 +23,11 @@ def update_cliente(request):
             form.save()
             object = Clientes.objects.order_by('id').last()
             context = {'object': object}
-    return render(request,template, context) 
+            return render(request,template, context) 
+        else:
+            # Se o formulário não for válido, retorne uma resposta JSON com os erros
+            errors = form.errors.as_json()
+            return JsonResponse({'errors': errors}, status=400)
             
 def ultimo_cliente(request, id=None):    
     template = 'clientes/partials/_last_client.html'

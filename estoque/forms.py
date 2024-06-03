@@ -95,6 +95,23 @@ class EditarForm(forms.ModelForm):
         super(EditarForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+    
+    def save(self, commit=True):
+        # Obtém uma instância do Estoque a ser salvo
+        instance = super(EditarForm, self).save(commit=False)
+
+        # Obtém as chaves estrangeiras selecionadas
+        categoria = self.cleaned_data['categoria']
+        marca = self.cleaned_data['marca']
+
+        # Atribui as chaves estrangeiras à instância do Estoque
+        instance.categoria = categoria
+        instance.marca = marca
+
+        # Salva a instância do Estoque se commit for True
+        if commit:
+            instance.save()
+        return instance
 
 
 class AddCategoriaForm(forms.ModelForm):

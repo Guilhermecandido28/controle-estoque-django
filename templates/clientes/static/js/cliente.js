@@ -52,3 +52,24 @@ function adicionarPessoa() {
 }
 
 
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+const btnSalvar = document.getElementById("enviar-cliente");
+btnSalvar.addEventListener("click", function(event) {
+    // Selecionando o formulário
+    const form = document.querySelector('.needs-validation');
+
+    // Realizando a validação manualmente
+    if (form.checkValidity() === false) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    // Adicionando classes de validação do Bootstrap ao formulário
+    form.classList.add('was-validated');
+
+    // Verificando se o formulário é válido
+    if (form.checkValidity() === true) {
+        // Se o formulário for válido, exibe o toast
+        console.log('formulario enviado');
+    }
+});
