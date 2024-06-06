@@ -1,8 +1,10 @@
 # forms.py
 from django import forms
 from clientes.models import Clientes
-from .models import Caixa
+from .models import Caixa, Vendas, Troca
 from vendedores.models import Vendedores
+from estoque.models import Estoque
+
 
 class VendaForms(forms.Form):    
     cliente = forms.ModelChoiceField(
@@ -34,4 +36,33 @@ class CaixaForms(forms.ModelForm):
         labels = {
             'valor_inicial': 'Valor Inicial',
             'saida': 'Saídas'
+        }
+
+class TrocaForms(forms.ModelForm):
+    class Meta:
+        model = Troca
+        fields = ['produto_trocado', 'produto_novo']
+        widgets = {
+            'produto_trocado' : forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': ' ',
+                    'id': 'produto_trocado',
+                    'hx-post': 'produto_trocado/',
+                    'hx-target': '#info_produto_trocado',
+                    'hx-swap': 'innerHTML',
+                    'hx-trigger': 'keyup'
+                }
+            ),
+            'produto_novo' : forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': ' ',
+                    'id': 'produto_novo',
+                    'hx-post': 'produto_novo/',
+                    'hx-target': '#info_produto_novo',
+                    'hx-swap': 'innerHTML',
+                    'hx-trigger': 'keyup'
+                }
+            ),            
         }

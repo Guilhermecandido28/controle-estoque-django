@@ -1,0 +1,10 @@
+{% load custom_filters %}
+<div id="info_produto_trocado">
+    {% for codigo, descricao, tamanho, cor, preco in produto %}
+        <p>Código: {{ codigo }}</p>
+        <p>Descrição: {{ descricao }}</p>
+        <p>Tamanho: {{ tamanho }}</p>
+        <p>Cor: {{ cor }}</p>
+        <p>Preço: {{ preco | currency }}</p>
+    {% endfor %}
+</div>

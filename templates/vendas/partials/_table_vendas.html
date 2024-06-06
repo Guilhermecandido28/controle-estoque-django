@@ -1,15 +1,39 @@
 {% load custom_filters %}
-<tbody id="table_vendas">
-    {% if object_venda %}
-        {% for item in object_venda %}                                
-        <tr>   
-            <td>{{ item.data }}</td> 
-            <td>{{ item.descricao|safe }}</td>
-            <td>{{ item.forma_pagamento|forma_pagamento }}</td>    
-            <td>{{ item.desconto }}%</td>
-            <td>{{ item.total|currency }}</td>
-            <td>{{ item.cliente}}</td>
+{% load permission_tags %}
+<table class="table table-borderless align-middle" id="table_vendas">
+    <thead>
+        <tr>                               
+            <th scope="col">Data</th>
+            <th scope="col">Descrição da Venda</th>
+            <th scope="col">Forma de Pagamento</th>
+            <th scope="col">Desconto</th>                         
+            <th scope="col">Total</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Troca</th>                          
         </tr>
-        {% endfor %}
+    </thead>
+    {% if user|has_role:'gerente' %}
+        <tbody >
+            {% if object_venda %}
+                {% for item in object_venda %}                                
+                <tr>   
+                    <td>{{ item.data }}</td> 
+                    <td>{{ item.descricao|safe }}              
+                    </td>
+                    <td>{{ item.forma_pagamento|forma_pagamento }}</td>    
+                    <td>{{ item.desconto }}%</td>
+                    <td>{{ item.total|currency }}</td>
+                    <td>{{ item.cliente}}</td>
+                    <td>
+                        <a href="#" hx-post="{% url 'card_troca' item.id %}" hx-swap="outerHTML" hx-target="#trocas">
+                            <i class="bi bi-arrow-left-right fs-3 fw-bold"></i>
+                        </a>
+                    </td>            
+                </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    {% else %}
+        <p>Você não tem permissão para ver isso</p>
     {% endif %}
-</tbody>
+</table>

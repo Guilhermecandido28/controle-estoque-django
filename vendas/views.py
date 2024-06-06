@@ -1,13 +1,13 @@
-from django.shortcuts import render
-from django.http import HttpResponseBadRequest, HttpResponse, JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseBadRequest, JsonResponse, HttpResponse
 from .filters import CodBarrasFilter, VendasFilter
 from estoque.models import Estoque
 from .models import Vendas, Caixa
 from clientes.models import Clientes
-from .forms import VendaForms, CaixaForms
+from .forms import VendaForms, CaixaForms, TrocaForms
 from datetime import datetime, date
 from vendedores.models import Vendedores
-
+from django.contrib import messages
 from .functions import ajustar_estoque
 from django.db.models.aggregates import Sum
 from decimal import Decimal
@@ -40,7 +40,6 @@ def venda(request):
     context = {'filter': object_filter, 'form':form, 'object_venda': object_vendas, 'caixa_form': form_caixa, 'valor': valor, 'filtro_venda': filter_vendas}
     return render(request, 'vendas/venda.html', context)
 
-
 def inserir_venda(request): 
     if request.method == 'POST':
         cod_barras = request.POST.get('codigo_barras', None)        
@@ -66,17 +65,18 @@ def inserir_venda(request):
 
     return JsonResponse({'success': False, 'message': 'Método não permitido'})
 
-    
-    
-
 def salvar_venda(request):    
     if request.method == 'POST':
-        valores = [(item['codigo_barras'], item['descricao'], item['tamanho'], item['cor']) for item in lista_preco]
-        descricao = [', '.join(tupla) for tupla in valores]
-        descricao = '; '.join(descricao)       
-        vendedor_id = request.POST.get('vendedor')                
-        vendedores = Vendedores.objects.get(id=vendedor_id)            
-        cliente_id = request.POST.get('cliente')        
+        try:
+            valores = [(item['codigo_barras'], item['descricao'], item['tamanho'], item['cor']) for item in lista_preco]
+            descricao = [', '.join(tupla) for tupla in valores]
+            descricao = '; '.join(descricao)       
+            vendedor_id = request.POST.get('vendedor')                
+            vendedores = Vendedores.objects.get(id=vendedor_id)            
+            cliente_id = request.POST.get('cliente')  
+        except ValueError:
+            erro = 'Campos obrigatórios não preenchidos!'
+            messages.error(request, f'Venda não concluída! Por favor, atualize a página e tente novamente. Erro: {erro}')      
         try:
              cliente = Clientes.objects.get(pk=cliente_id)
         except Exception as e:            
@@ -96,14 +96,13 @@ def salvar_venda(request):
             Vendas.objects.create(descricao=descricao, cliente=cliente, desconto=desconto, forma_pagamento=forma_pagamento, data=data, total=total, vendedor=vendedores)
             ajustar_estoque(lista_preco)            
             lista_preco.clear()
-            print('venda terminada com sucesso')            
-            return HttpResponse(status=200)
+            messages.success(request, 'A venda foi realizada com sucesso!')            
+            return render(request, 'vendas/partials/_message.html')
         except Exception as e:
             lista_preco.clear()
-            print("Erro ao criar venda:", e)           
-            # Redireciona para a página anterior (com mensagem de erro)
-            return HttpResponseBadRequest("Erro de validação: {}".format(e))
-        
+            messages.error(request, f'A Venda falhou, erro: {e}')           
+            
+            return render(request, 'vendas/partials/_message.html')
 
 def movimentacao_dia(request): 
     # Obtém a data de hoje
@@ -138,9 +137,6 @@ def caixa_valor_inicial(request):
         context = {'valor': valor}     
            
         return render(request, 'vendas/partials/caixa_valor_inicial.html', context)
-   
-        
-   
 
 def caixa_lancar_saida(request):
 
@@ -167,16 +163,64 @@ def pesquisar_vendas(request):
     context = {'object_venda': object_vendas, 'filtro': filtro}        
     return render(request, template_name, context)
 
+def deletar_venda(request, id):
+    template_name = 'vendas/partials/_table.html'
+    global lista_preco
+    id_str = str(id)
+    lista_preco = [item for item in lista_preco if item['codigo_barras'] != id_str]    
+              
+    return render(request, template_name)
 
 
-                  
+def card_troca(request, id):
+    template_name = 'vendas/partials/trocas.html'
+    form = TrocaForms()
+    object = Vendas.objects.filter(id=id).values_list('descricao', flat=True)
+    context = {'object': object, 'form': form}
+    return render(request, template_name, context)
 
-            
-   
-               
-
-
-
-
+def produto_trocado(request):
+    if request.method == 'POST':
+        produto_trocado = request.POST.get('produto_trocado')
+        if produto_trocado and len(produto_trocado) == 13:
+            produto = Estoque.objects.filter(codigo_barras = produto_trocado).values_list('codigo_barras','descricao', 'tamanho', 'cor', 'venda')
+            template_name = 'vendas/partials/produto_trocado.html'
+            context = {'produto': produto}
+            return render(request, template_name, context)
+        else:
+            return HttpResponseBadRequest("O código de barras deve ter 13 caracteres")
+    else:
+        return HttpResponse("Método não permitido.", status=405)
     
+def produto_novo(request):
+    if request.method == 'POST':
+        produto_novo = request.POST.get('produto_novo')
+        if produto_novo and len(produto_novo) == 13:
+            produto = Estoque.objects.filter(codigo_barras = produto_novo).values_list('codigo_barras','descricao', 'tamanho', 'cor', 'venda')
+            template_name = 'vendas/partials/produto_novo.html'
+            context = {'produto': produto}
+            return render(request, template_name, context)
+        else:
+            return HttpResponseBadRequest("O código de barras deve ter 13 caracteres")
+    else:
+        return HttpResponse("Método não permitido.", status=405)
+    
+def finalizar_troca(request):
+    produto_trocado = request.POST.get('produto_trocado')
+    produto_novo = request.POST.get('produto_novo')
+    objeto_trocado = Estoque.objects.get(codigo_barras=produto_trocado)
+    objeto_novo = Estoque.objects.get(codigo_barras=produto_novo)
+
+    # Atualizar a quantidade do objeto trocado
+    objeto_trocado.quantidade -= 1
+    objeto_trocado.save()
+
+    # Atualizar a quantidade do objeto novo
+    objeto_novo.quantidade += 1
+    objeto_novo.save()
+
+    object_vendas = Vendas.objects.all()
+    template_name = 'vendas/partials/_table_vendas.html'
+    context = {'object_venda': object_vendas}
+    return render(request, template_name, context)
 

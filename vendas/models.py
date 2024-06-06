@@ -3,6 +3,7 @@ from django.utils import timezone
 from datetime import datetime
 from clientes.models import Clientes
 from vendedores.models import Vendedores
+from estoque.models import Estoque
 
 class Vendas(models.Model):
     FORMAS_DE_PAGAMENTO = [
@@ -47,3 +48,12 @@ class Caixa(models.Model):
     def __str__(self):
         return f'Caixa do dia {self.data} fechou em {self.saldo}'
     
+class Troca(models.Model):
+    venda = models.ForeignKey(Vendas, on_delete=models.CASCADE)
+    produto_trocado = models.ForeignKey(Estoque, related_name='produto_trocado', on_delete=models.CASCADE)
+    produto_novo = models.ForeignKey(Estoque, related_name='produto_novo', on_delete=models.CASCADE)
+    data_troca = models.DateField(auto_now_add=True)
+    valor_diferenca = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"Troca na venda {self.venda.id}"
