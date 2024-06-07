@@ -68,3 +68,4 @@ function mostrarRepetirSenha() {
         btnShowRepetirSenha.classList.replace('bi-eye-slash', 'bi-eye');
     }
 }
+

@@ -29,8 +29,8 @@ class EventoVenda(models.Model):
         verbose_name = 'Evento de Venda'
         verbose_name_plural = 'Eventos de Vendas'
 
-    def __str__(self) -> str:
-        return f'O {self.vendedor} vendeu {self.produto} na {self.data} com um total {self.total} reais.'
+    def __str__(self) -> str:        
+        return self.produto
     
 
 
