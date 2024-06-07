@@ -5,15 +5,17 @@
     <form action="">
         {% csrf_token %}
 
-        <div class="form-floating my-3">
+        <div class="form-floating m-3 d-flex flex-row" style="max-width: 75%;">
             {{ form.produto_trocado }}
             <label for="{{ form.produto_trocado.id_for_label }}" class="form-label">{{ form.produto_trocado.label }}</label>
+            {% include 'vendas/partials/produto_trocado.html' %}
         </div>
         
         
-        <div class="form-floating my-3">
+        <div class="form-floating m-3 d-flex flex-row" style="max-width: 75%;">
             {{ form.produto_novo }}
-            <label for="{{ form.produto_novo.id_for_label }}" class="form-label">{{ form.produto_novo.label }}</label>
+            <label for="{{ form.produto_novo.id_for_label }}" class="form-label">{{ form.produto_novo.label }}</label>          
+            {% include 'vendas/partials/produto_novo.html' %}
         </div>          
         
         <button
@@ -21,7 +23,9 @@
         hx-target = "#trocas"
         hx-swap="outerHTML"
         type="submit" class="btn btn-primary">Trocar</button>
+        <div class="w-100 d-flex align-items-baseline justify-content-end">                        
+            <span class="lead text-success fs-1 fw-semibold ms-5" id="total_troca">R$ 0,00</span>
+        </div>
     </form>
-{% include 'vendas/partials/produto_trocado.html' %}
-{% include 'vendas/partials/produto_novo.html' %}
+
 </div>

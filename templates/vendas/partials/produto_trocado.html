@@ -1,10 +1,10 @@
 {% load custom_filters %}
-<div id="info_produto_trocado">
+<div class="ms-3 d-flex" id="info_produto_trocado">
     {% for codigo, descricao, tamanho, cor, preco in produto %}
-        <p>Código: {{ codigo }}</p>
-        <p>Descrição: {{ descricao }}</p>
-        <p>Tamanho: {{ tamanho }}</p>
-        <p>Cor: {{ cor }}</p>
-        <p>Preço: {{ preco | currency }}</p>
+        <p class="m-3">Código: {{ codigo }}</p>
+        <p class="m-3">Descrição: {{ descricao }}</p>
+        <p class="m-3">Tamanho: {{ tamanho }}</p>
+        <p class="m-3">Cor: {{ cor }}</p>
+        <p class="m-3" id="preco_trocado_{{ forloop.counter }}">Preço: {{ preco | currency }}</p>
     {% endfor %}
 </div>

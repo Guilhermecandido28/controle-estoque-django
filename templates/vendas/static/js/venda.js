@@ -83,29 +83,34 @@ function calcularPrecoTotal(row) {
 
 // Função para atualizar o total geral na tabela
 function atualizarTotalGeral() {
-  // console.log('Início da atualização do total geral');
+//   console.log('Início da atualização do total geral');
   var linhas = document.querySelectorAll('#lista_item tbody tr');
   var totalGeral = 0;
   linhas.forEach(function(row) {
       totalGeral += parseFloat(calcularPrecoTotal(row));
   });
-  // console.log('Total geral calculado:', totalGeral);
+//   console.log('Total geral calculado:', totalGeral);
   document.getElementById('total_geral').textContent = 'R$ ' + totalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-  // console.log('Fim da atualização do total geral');
+//   console.log('Fim da atualização do total geral');
 }
 
 
 // Chamar a função de atualização do total geral após qualquer modificação na tabela
 document.body.addEventListener('htmx:afterSwap', function(event) {
-  // console.log('Evento htmx:afterSwap disparado');
-  // console.log('Detalhes do evento:', event.detail);
+//   console.log('Evento htmx:afterSwap disparado');
+//   console.log('Detalhes do evento:', event.detail);
   var trigger = event.detail.elt; // Obter o elemento que disparou o evento
-  // console.log('Elemento que disparou o evento:', trigger); // Mensagem de depuração
+//   console.log('Elemento que disparou o evento:', trigger); // Mensagem de depuração
   if (trigger.id === 'lista_item') {
-      // console.log('Chamando atualizarTotalGeral()');
-      atualizarTotalGeral();
-  }
+    // console.log('Chamando atualizarTotalGeral()');
+    atualizarTotalGeral();
+} else if (trigger.closest('#lista_item')) {
+    // console.log('Chamando atualizarTotalGeral() a partir de um descendente');
+    atualizarTotalGeral();
+}
 });
+
+
 
 // Função para atualizar o total no modal
 
@@ -158,15 +163,6 @@ document.body.addEventListener('htmx:afterSwap', function(event) {
 });
 
 
-function deleteRows(){
-  var tabela = document.getElementById("lista_item");
-  var rowCount = tabela.rows.length;  
-  for (var i = rowCount - 1; i > 0; i--){
-    tabela.deleteRow(i);
-  }
-  
-  atualizarTotalGeral()
-}
 
 // função que atualiza o total quando é colocado um desconto
 function calcularNovoTotal(desconto) {
@@ -190,4 +186,82 @@ if (inputDesconto) {
           calcularNovoTotal(desconto);
       }
   });
+}
+
+
+document.body.addEventListener('htmx:afterSwap', function(event) {
+    var trigger = event.detail.elt;
+    // console.log('htmx:afterSwap event triggered');  // Debug message
+
+    if (trigger.id === 'trocas') {
+        // console.log('Trigger id is trocas');  // Debug message
+        var totalTrocaElem = document.getElementById('total_troca');
+        if (totalTrocaElem) {
+            var totalTroca = parseFloat(totalTrocaElem.textContent.replace('R$ ', '').replace(',', '.'));
+            // console.log('Total troca value:', totalTroca);  // Debug message
+            if (!isNaN(totalTroca)) {
+                setTimeout(calcularTotalTroca, 100);  // Add delay
+            } else {
+                console.error('Erro: totalTroca is NaN');
+            }
+        } else {
+            console.error('Elemento total_troca não encontrado');
+        }
+    } else if (trigger.id === 'info_produto_trocado' || trigger.id === 'info_produto_novo') {
+        // console.log('Trigger id is info_produto_trocado or info_produto_novo');  // Debug message
+        setTimeout(calcularTotalTroca, 100);  // Add delay to ensure elements are in the DOM
+    } else {
+        console.log('Trigger id is not trocas, info_produto_trocado or info_produto_novo');
+    }
+});
+
+function calcularTotalTroca() {
+    // console.log('calcularTotalTroca called');  // Debug message
+    var trocados = document.querySelectorAll('[id^="preco_trocado_"]');
+    var novos = document.querySelectorAll('[id^="preco_novo_"]');
+
+    // console.log('Trocados:', trocados);  // Debug message
+    // console.log('Novos:', novos);  // Debug message
+
+    var totalTrocado = 0;
+    var totalNovo = 0;
+
+    trocados.forEach(function(precoElem) {
+        var precoText = precoElem.textContent;
+        // console.log('Preço trocado text:', precoText);  // Debug message
+        var preco = extrairPreco(precoText);
+        // console.log('Preço trocado parsed:', preco);  // Debug message
+        if (!isNaN(preco)) {
+            totalTrocado += preco;
+        }
+    });
+
+    novos.forEach(function(precoElem) {
+        var precoText = precoElem.textContent;
+        // console.log('Preço novo text:', precoText);  // Debug message
+        var preco = extrairPreco(precoText);
+        // console.log('Preço novo parsed:', preco);  // Debug message
+        if (!isNaN(preco)) {
+            totalNovo += preco;
+        }
+    });
+
+    var diferenca = totalNovo - totalTrocado;
+    // console.log('Diferença calculada:', diferenca);
+
+    var totalTrocaElem = document.getElementById('total_troca');
+    if (totalTrocaElem) {
+        totalTrocaElem.textContent = 'R$ ' + diferenca.toFixed(2).replace('.', ',');
+        // console.log('Elemento total_troca atualizado:', totalTrocaElem.textContent);
+    } else {
+        console.error('Elemento total_troca não encontrado no calcularTotalTroca');
+    }
+}
+
+function extrairPreco(precoText) {
+    var match = precoText.match(/R\$ ([\d,.]+)/);
+    if (match && match[1]) {
+        return parseFloat(match[1].replace('.', '').replace(',', '.'));
+    }
+    return NaN;
 }
