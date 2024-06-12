@@ -1,0 +1,44 @@
+{% extends 'partials/base.html'%}
+{% load static %}
+{% block content %}
+    <div class="container-fluid d-flex h-100 pb-5">
+        <div class="col-4 container-fluid pt-5">
+        <div class="row g-3 h-100">
+            <div class="col-12 h-100">
+            <div class="card h-100">
+                <div class="card-body">
+                card de adicionar tarefa
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+        <div class="col-8 container-fluid pt-5">
+            <div class="row g-3">
+                <div class="col-12 col-lg-12">
+                    <div class="bg-custom card h-100">
+                        <div class="card-body d-flex flex-column justify-content-evenly align-items-center">
+                        gerenciador de tarefas
+                        </div>
+                    </div>
+                </div>              
+                <div class="col-12">
+                    <div class="bg-custom card h-100">
+                        <div class="card-body">
+                            <div class="" id="calendar">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/cliente.js' %}"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <script>
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+        })
+    
+    </script>   
+    {% endblock %}

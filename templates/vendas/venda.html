@@ -117,27 +117,25 @@
             </div>
           </div>
           <div class="col-12 col-lg-12">
-          <div class="bg-custom card h-100">
-              <div class="card-body d-flex flex-column align-items-center table-responsive table-container" style="min-height: 200px; max-height: 500px; overflow-y: auto;"  id="trocas">
-                  <!-- <table class="table table-borderless align-middle">
-                      <thead>
-                        <tr>                               
-                            <th scope="col">Data</th>
-                            <th scope="col">Descrição da Venda</th>
-                            <th scope="col">Forma de Pagamento</th>
-                            <th scope="col">Desconto</th>                         
-                            <th scope="col">Total</th>
-                            <th scope="col">Cliente</th>
-                            <th scope="col">Troca</th>                          
-                        </tr>
-                      </thead>
-                      {% if user|has_role:'gerente' %} -->
-                        {% include 'vendas/partials/_table_vendas.html' %}
-                      <!-- {% else %}
-                      <p>Você não tem permissão para ver isso</p>
-                      {% endif %}                      
-                    </table> -->
-              </div>
+          <div class="bg-custom card h-100">              
+              <!-- <table class="table table-borderless align-middle">
+                  <thead>
+                    <tr>                               
+                        <th scope="col">Data</th>
+                        <th scope="col">Descrição da Venda</th>
+                        <th scope="col">Forma de Pagamento</th>
+                        <th scope="col">Desconto</th>                         
+                        <th scope="col">Total</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Troca</th>                          
+                    </tr>
+                  </thead>
+                  {% if user|has_role:'gerente' %} -->
+                    {% include 'vendas/partials/_table_vendas.html' %}
+                  <!-- {% else %}
+                  <p>Você não tem permissão para ver isso</p>
+                  {% endif %}                      
+                </table> -->              
           </div>
       </div>
     </div>    

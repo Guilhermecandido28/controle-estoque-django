@@ -19,10 +19,15 @@
         </div>          
         
         <button
-        hx-post = "{% url 'finalizar_troca' %}"
+        hx-post = "{% url 'finalizar_troca' venda_id %}"
         hx-target = "#trocas"
         hx-swap="outerHTML"
         type="submit" class="btn btn-primary">Trocar</button>
+        <button
+        hx-post = "{% url 'cancelar_troca' %}"
+        hx-target = "#trocas"
+        hx-swap="outerHTML"
+        type="submit" class="btn btn-primary">Voltar</button>
         <div class="w-100 d-flex align-items-baseline justify-content-end">                        
             <span class="lead text-success fs-1 fw-semibold ms-5" id="total_troca">R$ 0,00</span>
         </div>

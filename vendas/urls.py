@@ -14,6 +14,7 @@ urlpatterns = [
     path('card_troca/<int:id>', views.card_troca, name='card_troca'),
     path('produto_trocado/', views.produto_trocado, name='produto_trocado'),
     path('produto_novo/', views.produto_novo, name='produto_novo'),
-    path('finalizar_troca/', views.finalizar_troca, name='finalizar_troca')
+    path('finalizar_troca/<int:id>', views.finalizar_troca, name='finalizar_troca'),
+    path('cancelar_troca/', views.cancelar_troca, name='cancelar_troca')
 ]
 

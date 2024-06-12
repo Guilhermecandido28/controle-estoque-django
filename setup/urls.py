@@ -10,5 +10,6 @@ urlpatterns = [
     path('clientes/', include('clientes.urls')),
     path('vendas/', include('vendas.urls')),
     path('vendedores/', include('vendedores.urls')),        
+    path('tarefas/', include('tarefas.urls')),
     path("__debug__/", include("debug_toolbar.urls")),
 ]

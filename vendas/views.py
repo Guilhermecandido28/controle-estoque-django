@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseBadRequest, JsonResponse, HttpResponse
 from .filters import CodBarrasFilter, VendasFilter
 from estoque.models import Estoque
-from .models import Vendas, Caixa
+from .models import Vendas, Caixa, Troca
 from clientes.models import Clientes
 from .forms import VendaForms, CaixaForms, TrocaForms
 from datetime import datetime, date
@@ -176,7 +176,7 @@ def card_troca(request, id):
     template_name = 'vendas/partials/trocas.html'
     form = TrocaForms()
     object = Vendas.objects.filter(id=id).values_list('descricao', flat=True)
-    context = {'object': object, 'form': form}
+    context = {'object': object, 'form': form, 'venda_id': id}
     return render(request, template_name, context)
 
 def produto_trocado(request):
@@ -205,11 +205,12 @@ def produto_novo(request):
     else:
         return HttpResponse("Método não permitido.", status=405)
     
-def finalizar_troca(request):
+def finalizar_troca(request, id):
+    venda = get_object_or_404(Vendas, id=id)  # Obtém a instância da venda
     produto_trocado = request.POST.get('produto_trocado')
     produto_novo = request.POST.get('produto_novo')
-    objeto_trocado = Estoque.objects.get(codigo_barras=produto_trocado)
-    objeto_novo = Estoque.objects.get(codigo_barras=produto_novo)
+    objeto_trocado = get_object_or_404(Estoque, codigo_barras=produto_trocado)
+    objeto_novo = get_object_or_404(Estoque, codigo_barras=produto_novo)
 
     # Atualizar a quantidade do objeto trocado
     objeto_trocado.quantidade -= 1
@@ -219,8 +220,23 @@ def finalizar_troca(request):
     objeto_novo.quantidade += 1
     objeto_novo.save()
 
+    diferenca = float(objeto_trocado.venda) - float(objeto_novo.venda) 
+
+    Troca.objects.create(
+        venda=venda,  # Passa a instância de Vendas
+        produto_trocado=objeto_trocado,
+        produto_novo=objeto_novo,
+        valor_diferenca=diferenca*-1
+    )
+
     object_vendas = Vendas.objects.all()
     template_name = 'vendas/partials/_table_vendas.html'
     context = {'object_venda': object_vendas}
     return render(request, template_name, context)
 
+
+def cancelar_troca(request):
+    template_name = 'vendas/partials/_table_vendas.html'
+    object_vendas = Vendas.objects.all()
+    context = {'object_venda': object_vendas}
+    return render(request, template_name, context)
