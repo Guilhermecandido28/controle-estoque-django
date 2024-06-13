@@ -62,18 +62,4 @@ def eventos(request):
     } for evento in eventos]    
     return JsonResponse(eventos, safe=False, encoder=DjangoJSONEncoder)
 
-def marcar_concluida(request):
-    print('função marcar concluida chamada')
-    data = json.loads(request.body)
-    print('passou da importação duvidosa')
-    evento_id = data.get('id')
 
-    try:
-        evento = get_object_or_404(Tarefas, id=evento_id)
-        evento.status = True
-        evento.save()
-        return JsonResponse({'mensagem': 'Tarefa marcada como concluída'})
-    except Tarefas.DoesNotExist:
-        return JsonResponse({'erro': 'Tarefa não encontrada'}, status=404)
-    except Exception as e:
-        return JsonResponse({'erro': str(e)}, status=500)
