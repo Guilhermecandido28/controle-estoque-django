@@ -32,6 +32,7 @@ def adicionar_tarefa(request):
                 'prazo': tarefa.prazo.isoformat(),
                 'responsavel': tarefa.funcionario.nome,
                 'status': tarefa.status,
+                'color' : tarefa.cor,
             })
 
         else:
@@ -52,7 +53,8 @@ def eventos(request):
         'title': evento.tarefa,
         'start': evento.inicio.astimezone(timezone.get_current_timezone()).isoformat(),  # Converta para o fuso horário correto
         'end': evento.prazo.astimezone(timezone.get_current_timezone()).isoformat(),
-        'id': evento.id,        
+        'id': evento.id,
+        'color' : evento.cor,        
         'extendedProps': {
             'funcionario': {
                 'nome': evento.funcionario.nome,                

@@ -6,7 +6,7 @@ class TarefasForms(forms.ModelForm):
     required_css_class = 'required'
     class Meta:
         model = Tarefas
-        exclude = ['status', 'id']
+        exclude = ['status', 'id', 'cor']
         widgets = {
             'tarefa': forms.Textarea(
                 attrs={

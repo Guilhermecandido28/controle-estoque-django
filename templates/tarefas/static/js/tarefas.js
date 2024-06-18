@@ -52,18 +52,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!resposta['success']) {
             msg.innerHTML = `<div class="alert alert-danger" role="alert">${resposta['errors']}</div>`;
         } else {
-            console.log('mensagem')
+            
             msg.innerHTML = `<div class="alert alert-success" role="alert">Tarefa salva com sucesso!</div>`;
             form.reset();
 
             
-
+            console.log(resposta['color'])
             const novoEvento = {
                 id: resposta['id'],
                 title: resposta['tarefa'],
                 start: resposta['inicio'],
                 end: resposta['prazo'],
-                color: getEventColor(resposta['status']),            
+                color: resposta['color'],            
                 extendedProps: {
                     funcionario: resposta['funcionario'],
                     status: resposta['status']
@@ -78,8 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }    
     });
     function removerMsg(){
-        setTimeout(() =>{
-            console.log('remover mensagem')
+        setTimeout(() =>{            
             document.getElementById("messages").innerHTML = "";
         }, 3000)
     }
@@ -92,13 +91,7 @@ document.body.addEventListener('htmx:configRequest', function(event) {
     event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
 });
 
-function getEventColor(status){
-    if (status === true) {
-        return 'green'; // Cor verde para status verdadeiro
-    } else {
-        return 'red'; // Cor vermelha para status falso
-    }
-}
+
 
 function converterData(data) {
     let dataObj;

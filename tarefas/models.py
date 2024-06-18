@@ -10,17 +10,22 @@ class Tarefas(models.Model):
     prazo = models.DateTimeField(default= timezone.now)
     status = models.BooleanField(default=False)
     funcionario = models.ForeignKey(Vendedores, on_delete=models.CASCADE, default=1)
+    cor = models.CharField(max_length=10, null=True, blank=True) 
 
     class Meta:
         verbose_name = 'Tarefa'
-        verbose_name_plural = 'Tarefas'       
-    
+        verbose_name_plural = 'Tarefas'
+
     def clean(self):
         if self.inicio > self.prazo:
             raise ValidationError("A data de início não pode ser posterior ao prazo.")
 
     def save(self, *args, **kwargs):
         self.full_clean()
+        if self.status:
+            self.cor = 'green'
+        else:
+            self.cor = 'red'
         super().save(*args, **kwargs)    
 
 
