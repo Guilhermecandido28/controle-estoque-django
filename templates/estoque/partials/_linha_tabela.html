@@ -14,7 +14,7 @@
     <td>{{ object.fornecedor }}</td>
     <td>{{ object.venda|currency}}</td>
     <td>
-        <button class="btn" hx-delete="{% url 'deletar_produto' object.codigo_barras %}" hx-confirm="Tem certeza que voce deseja Excluir o item?" hx-target="closest tr" hx-swap="outerHTML"><i class="btn bi bi-trash fs-4"></i></button>
-        <button class="btn" hx-post="{% url 'editar_produto' object.codigo_barras %}"  hx-target="closest tr" hx-swap="outerHTML"><i class="btn bi bi-pencil fs-4"></i></button>                
+        <button class="btn" hx-delete="{% url 'deletar_produto' object.codigo_barras %}" hx-confirm="Tem certeza que voce deseja Excluir o item?" hx-target="closest tr" hx-swap="outerHTML"><i class="btn bi bi-trash fs-4" title="Excluir produto"></i></button>
+        <button class="btn" hx-post="{% url 'editar_produto' object.codigo_barras %}"  hx-target="closest tr" hx-swap="outerHTML" title="Editar produto"><i class="btn bi bi-pencil fs-4"></i></button>                
     </td>
 </tr>
