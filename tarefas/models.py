@@ -8,7 +8,7 @@ class Tarefas(models.Model):
     tarefa = models.TextField()
     inicio = models.DateTimeField(default=timezone.now)
     prazo = models.DateTimeField(default= timezone.now)
-    status = models.BooleanField(default=True)
+    status = models.BooleanField(default=False)
     funcionario = models.ForeignKey(Vendedores, on_delete=models.CASCADE, default=1)
 
     class Meta:
@@ -21,7 +21,8 @@ class Tarefas(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs)    
+
 
     def __str__(self):
         return self.tarefa

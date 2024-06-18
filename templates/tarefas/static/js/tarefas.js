@@ -1,89 +1,89 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Definição do calendário
     var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {       
-        
-        initialView: 'timeGridDay',
-        timeZone: 'America/Sao_Paulo',
+    var calendar = new FullCalendar.Calendar(calendarEl, {                
         locale: 'pt-br',
-        headerToolbar:{
+        height: '1000px', 
+        headerToolbar: {
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        
-        events: 'eventos/',  // URL do endpoint que retorna os eventos
+        events: 'eventos/',  
         eventClick: function(info) {
-            // Mostrar tooltip ao clicar no evento
-            var tooltipContent = '<div><strong>' + info.event.title + '</strong><br>' + info.event.extendedProps.description + '</div>';
-
-            tippy(info.el, {
-                content: tooltipContent,
-                allowHTML: true,
-                interactive: true,
-                theme: 'light',
-                placement: 'top',
-                trigger: 'click',
-                maxWidth: 300
-            });
+            const visualizarModal = new bootstrap.Modal(document.getElementById("visualizarModal"));
+            var eventId = info.event.id;
+            document.getElementById("visualizar_tarefa").innerText = info.event.title;
+            document.getElementById("visualizar_inicio").innerText = new Date(info.event.start).toLocaleString();
+            document.getElementById("visualizar_fim").innerText = info.event.end !== null ? new Date(info.event.end).toLocaleString() : new Date(info.event.start).toLocaleString();
+            document.getElementById("visualizar_responsavel").innerText = info.event.extendedProps.funcionario.nome;
+            document.getElementById("visualizar_status").innerText = info.event.extendedProps.status == true ? 'Concluída' : 'Pendente';
+            visualizarModal.show();
+        },
+        dateClick: function(info) {
+            const cadastrarModal = new bootstrap.Modal(document.getElementById("cadastrarModal"));
+            console.log("Data selecionada:", info.dateStr);
+            document.getElementById("inicio").value = converterData(info.dateStr);
+            document.getElementById("fim").value = converterData(info.dateStr);
+            cadastrarModal.show();
         }
     });        
 
+    // Renderizar o calendário
     calendar.render();
-});
+    const msg = document.getElementById("messages")
+    // Adicionar evento de clique no botão de cadastrar
+    document.getElementById('btnCadEvento').addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        let form = document.getElementById('formCadEvento');
+        let formData = new FormData(form);
 
-function marcarTarefaConcluida(evento) {
-    // Aqui você deve enviar uma requisição para o backend (Django) para marcar a tarefa como concluída
-    var evento_id = evento.id;
-
-    fetch('/marcar_concluida/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')  // Use isso se estiver usando CSRF protection no Django
-        },
-        body: JSON.stringify({ id: evento_id })
-    })
-    .then(response => {
-        if (response.ok) {
-            // Atualizar o evento no calendário para refletir o novo status
-            evento.setProp('backgroundColor', 'green');  // Alterar a cor do evento para verde (concluído)
-            console.log('Tarefa marcada como concluída com sucesso');
-        } else {
-            console.error('Erro ao marcar tarefa como concluída');
-        }
-    })
-    .catch(error => {
-        console.error('Erro na requisição:', error);
-    });
-}
-
-
-var form = document.getElementById('tarefa-form');
-    if (form) {
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-            var formData = new FormData(form);
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Form submission response:', data);
-                if (data.success) {
-                    calendar.refetchEvents();  // Atualiza os eventos no calendário
-                    alert('A tarefa foi adicionada com sucesso!');
-                    form.reset();  // Reseta o formulário
-                } else {
-                    alert('Ocorreu um erro: ' + (data.error || data.errors.join(', ')));
-                }
-            })
-            .catch(error => console.error('Erro ao submeter o formulário:', error));
+        const dados = await fetch("/tarefas/adicionar_tarefa/", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            }
         });
+
+        const resposta = await dados.json(); 
+
+        if (!resposta['success']) {
+            msg.innerHTML = `<div class="alert alert-danger" role="alert">${resposta['errors']}</div>`;
+        } else {
+            console.log('mensagem')
+            msg.innerHTML = `<div class="alert alert-success" role="alert">Tarefa salva com sucesso!</div>`;
+            form.reset();
+
+            
+
+            const novoEvento = {
+                id: resposta['id'],
+                title: resposta['tarefa'],
+                start: resposta['inicio'],
+                end: resposta['prazo'],
+                color: getEventColor(resposta['status']),            
+                extendedProps: {
+                    funcionario: resposta['funcionario'],
+                    status: resposta['status']
+                }
+            };
+
+            calendar.addEvent(novoEvento);
+            removerMsg()
+            const cadastrarModal = new bootstrap.Modal(document.getElementById("cadastrarModal"));
+            cadastrarModal.hide();
+
+        }    
+    });
+    function removerMsg(){
+        setTimeout(() =>{
+            console.log('remover mensagem')
+            document.getElementById("messages").innerHTML = "";
+        }, 3000)
     }
+});
 
 
 
@@ -92,35 +92,41 @@ document.body.addEventListener('htmx:configRequest', function(event) {
     event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
 });
 
+function getEventColor(status){
+    if (status === true) {
+        return 'green'; // Cor verde para status verdadeiro
+    } else {
+        return 'red'; // Cor vermelha para status falso
+    }
+}
 
+function converterData(data) {
+    let dataObj;
+    try {
+        // Tenta criar um objeto Date a partir da data fornecida
+        dataObj = new Date(data);
+    } catch (e) {
+        // Se falhar, assume que a data já está no formato ISO 8601
+        dataObj = new Date(data);
+        console.warn("Falha ao criar objeto Date, assumindo formato ISO 8601:", dataObj); // Loga a nova tentativa com ISO 8601
+    }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.querySelector('form');
+    const ano = dataObj.getFullYear();
+    const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+    const dia = String(dataObj.getDate() + 1).padStart(2, '0');
+    const hora = String(dataObj.getHours()).padStart(2, '0');
+    const minuto = String(dataObj.getMinutes()).padStart(2, '0');
 
-    form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
+    const dataFormatada = `${ano}-${mes}-${dia} ${hora}:${minuto}`;    
 
-        form.classList.add('was-validated');
+    return dataFormatada;
+}
 
-        const formData = new FormData(form);
-        fetch("{% url 'adicionar_tarefa' %}", {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                Object.keys(data.errors).forEach(function (field) {
-                    const fieldElement = document.getElementById('id_' + field);
-                    fieldElement.classList.add('is-invalid');
-                    fieldElement.insertAdjacentHTML('afterend', '<div class="invalid-feedback">' + data.errors[field].join('<br>') + '</div>');
-                });
-            }
-        })
-        .catch(error => console.error('Erro:', error));
-    });
+// Configuração CSRF para htmx
+document.body.addEventListener('htmx:configRequest', function(event) {
+    event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
 });
+
+
+
 
