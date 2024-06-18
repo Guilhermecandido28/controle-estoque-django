@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 def estoque(request):
     if request.user.is_authenticated:
         
-        object = Estoque.objects.select_related('categoria', 'marca').all() #pega apenas os campos que eu quero para ser colocado na tabela do arquivo html.
+        object = Estoque.objects.select_related('categoria', 'marca').order_by('descricao').all().all() #pega apenas os campos que eu quero para ser colocado na tabela do arquivo html.
         object_filter = EstoqueFilter(request.GET, queryset=object)
         form = AddEstoqueForms()
         baixo_estoque = Estoque.objects.filter(quantidade__lte=1).aggregate(baixo_estoque=Count('quantidade'))  # verifica quantos produtos estão abaixo ou igual a zero.
