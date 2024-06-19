@@ -6,8 +6,8 @@ class TarefasForms(forms.ModelForm):
     required_css_class = 'required'
     class Meta:
         model = Tarefas
-        exclude = ['status', 'id', 'cor']
-        widgets = {
+        exclude = ['cor']
+        widgets = {          
             'tarefa': forms.Textarea(
                 attrs={
                     'class': 'form-control mb-0',
@@ -18,6 +18,7 @@ class TarefasForms(forms.ModelForm):
                     'id': 'tarefas'
                 }
             ),
+
             'inicio': forms.DateTimeInput(
                 attrs={
                     'type': 'datetime-local',
@@ -40,13 +41,22 @@ class TarefasForms(forms.ModelForm):
                     'placeholder': 'Funcionário',
                     'id': 'funcionario'
                 }
-            )             
+            ),
+            'status': forms.CheckboxInput(
+                attrs={
+                    'class': 'form-check-input',
+                    'role':'switch',                    
+                    'id': 'status',
+                }
+            ),
+            'id': forms.HiddenInput(),             
         }
         labels = {
             'tarefa': 'Tarefas:',
             'inicio': 'Início:',
             'prazo': 'Término',
-            'funcionario': 'Funcionário Responsável:',            
+            'funcionario': 'Funcionário Responsável:',
+            'status': 'Concluído'            
         }
 
     def clean(self):

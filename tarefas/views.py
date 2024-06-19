@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, HttpResponse
 from django.http import JsonResponse
 from .forms import TarefasForms
 from .filters import TarefasFilter
@@ -18,8 +18,7 @@ def adicionar_tarefa(request):
     if request.method == 'POST':
         
         form = TarefasForms(request.POST)
-        if form.is_valid():
-            
+        if form.is_valid():            
             tarefa = form.save()
             
             
@@ -47,7 +46,6 @@ def adicionar_tarefa(request):
         return JsonResponse({'success': False, 'errors': ['Método não permitido']})
 
 def eventos(request):
-    print('chamada a função eventos')
     eventos = Tarefas.objects.all()
     eventos = [{
         'title': evento.tarefa,
@@ -64,16 +62,39 @@ def eventos(request):
     } for evento in eventos]    
     return JsonResponse(eventos, safe=False, encoder=DjangoJSONEncoder)
 
-def editar_tarefa(request, pk):
-    editar_tarefa = get_object_or_404(Tarefas, pk=pk)
+def editar_tarefa(request, id):    
+    editar_tarefa = get_object_or_404(Tarefas, id=id)
+
+    
     if request.method == 'POST':
         form = TarefasForms(request.POST, instance=editar_tarefa)
+        
         if form.is_valid():
             form.save()
-            messages.success(request, 'A tarefa foi adicionada com sucesso!')
-            return render(request, 'partials/_alertas.html')
+            # Acessar os campos do objeto salvo
+            tarefa_salva = form.instance
+        
+            return JsonResponse({
+                'success': True,
+                'id': tarefa_salva.id,
+                'tarefa': tarefa_salva.tarefa,
+                'start': tarefa_salva.inicio.isoformat(),
+                'end': tarefa_salva.prazo.isoformat(),
+                'responsavel': tarefa_salva.funcionario.nome,
+                'status': tarefa_salva.status,
+                'color': tarefa_salva.cor,
+            })
+        else:
+            errors = []
+            for field, field_errors in form.errors.as_data().items():
+                for error in field_errors:
+                    errors.append(f"Erro no campo '{field}': {error}")
+            return JsonResponse({'success': False, 'errors': errors})
     else:
-        form = TarefasForms(instance=editar_tarefa)
-    return render(request, 'tarefas/partials/editar_tarefa.html', {'forms': form})
+        return JsonResponse({'success': False, 'errors': ['Método não permitido']})
+    
+
+
+    
 
 
