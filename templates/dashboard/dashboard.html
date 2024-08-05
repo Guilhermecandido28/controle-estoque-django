@@ -1,0 +1,254 @@
+{% extends 'partials/base.html'%}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-5">
+        <div class="row mb-3">
+            <div class="col-xl-6 col-xxl-5 d-flex">
+                <div class="w-100">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="card mb-3">
+                                {% include 'dashboard/partials/card1/_card1_entradas.html' %}
+                            </div>
+                            <div class="card mb-3">
+                                {% include 'dashboard/partials/card2/_card2_entradas.html' %}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="card mb-3">
+                                {% include 'dashboard/partials/card3/_card3_entradas.html' %}
+                            </div>
+                            <div class="card mb-3">
+                                {% include 'dashboard/partials/card4/_card4_entradas.html' %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-xxl-7">
+                {% include 'dashboard/partials/card5/_card5_entradas.html' %}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
+                <div class="card flex-fill w-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Vendas x Forma de Pagamento (MÊS)</h5>
+                    </div>
+                    <div class="card-body d-flex">
+                        <div class="aling-self-center w-100">
+                            <div class="py-3">
+                                <div class="chart chart-xs">
+                                    <div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand">
+                                        <div class="">
+
+                                        </div>
+                                    </div>
+                                    <div class="chartjs-size-monitor-shrink">
+                                        <div class="">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                    <canvas id="chartjs-dashboard-doughnut" width="595" height="200" style="display: block; width: 595px; height: 200px;" class="chartjs-render-monitor"></canvas>
+                                </div>
+                            </div>
+                            <table class="table mb-0">
+                                <tbody id="tabela-vendas-fp-mes">
+                                    <!-- Os dados serão preenchidos dinamicamente via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-12 col-xxl-6 d-flex order-3 order-xxl-2">
+                <div class="card flex-fill w-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Vendas x Dia (linha)</h5>
+                    </div>
+                    <div class="card-body align-content-center">
+                        <div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                            <canvas id="chartjs-bar" width="595" height="300" style="display: block; width: 595px; height: 300px;" class="chartjs-render-monitor"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1">
+                <div class="card flex-fill w-100">
+                    <div class="card flex-fill w-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Vendas x Forma de Pagamento (dia)</h5>
+                        </div>
+                        <div class="card-body d-flex">
+                            <div class="aling-self-center w-100">
+                                <div class="py-3">
+                                    <div class="chart chart-xs">
+                                        <div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand">
+                                            <div class="">
+    
+                                            </div>
+                                        </div>
+                                        <div class="chartjs-size-monitor-shrink">
+                                            <div class="">
+    
+                                            </div>
+                                        </div>
+                                    </div>
+                                        <canvas id="chartjs-dashboard-pie" width="595" height="200" style="display: block; width: 595px; height: 200px;" class="chartjs-render-monitor"></canvas>
+                                    </div>
+                                </div>
+                                <table class="table mb-0">
+                                    <tbody id="tabela-vendas-fp-dia">
+                                        <!-- Os dados serão preenchidos dinamicamente via JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-lg-8 col-xxl-9 d-flex">
+                <div class="card flex-fill w-100 overflow-auto" style="max-height: 400px;">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Tabela</h5>
+                    </div>
+                    <table class="table table-hover my-0 table-responsive">
+                        <thead class="sticky-top">
+                            <tr>
+                                <th>Descrição</th>
+                                <th class="d-none d-xl-table-cell">Data</th>
+                                <th class="d-none d-xl-table-cell">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela_saidas">
+                            {% for saida in saidas %}
+                                {% include 'dashboard/partials/_linha_tabela.html' %}
+                            {% endfor %}                
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 col-xxl-3 d-flex">
+                <div class="card flex-fill">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Cadastrar Saída</h5>
+                    </div>
+                    <div class="card-body d-flex">
+                        <div class="align-self-center w-100">
+                            <form hx-post="{% url 'salvar_saida' %}" hx-target="#tabela_saidas" hx-swap="afterbegin" class="row mb-3 g-2 needs-validation" novalidate>
+                                {% csrf_token %}
+                                <div class="col-12 col-md-12 col-lg-12 col-xl-12">
+                                    <div class="form-floating mb-3">
+                                        {{ forms.descricao }}
+                                        <label for="{{ field.id_for_label }}" class="form-label">{{ forms.descricao.label_tag }}</label>
+                                        <div class="invalid-feedback">
+                                            Campo Obrigatório.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-12 col-lg-12 col-xl-12">
+                                    <div class="form-floating mb-3">
+                                        {{ forms.data }}
+                                        <label for="{{ field.id_for_label }}" class="form-label">{{ forms.data.label_tag }}</label>
+                                        <div class="invalid-feedback">
+                                            Campo Obrigatório.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-12 col-lg-12 col-xl-12">
+                                    <div class="form-floating mb-3">
+                                        {{ forms.valor }}
+                                        <label for="{{ field.id_for_label }}" class="form-label">{{ forms.valor.label_tag }}</label>
+                                        <div class="invalid-feedback">
+                                            Campo Obrigatório.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-12 col-lg-12 col-xl-12">
+                                    <button class="btn btn-success w-100 h-100" type="submit">Salvar</button>
+                                </div>                                
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<script src="{% static 'js/vendasxmes.js' %}"></script>
+<script src="{% static 'js/saidasxmes.js' %}"></script>
+<script src="{% static 'js/vendaxfp_mes.js' %}"></script>
+<script src="{% static 'js/vendasxfp_dia.js' %}"></script>
+<script src="{% static 'js/vendasxdia.js' %}"></script>
+<script>
+    // Função para buscar e exibir os dados de vendas por forma de pagamento no mês
+    function carregarVendasPorFormaPagamentoMes() {
+        fetch("{% url 'vendasxfp_mes' %}")
+        .then(response => response.json())
+        .then(data => {
+            // Limpar a tabela
+            document.getElementById("tabela-vendas-fp-mes").innerHTML = "";
+
+            // Preencher a tabela com os dados recebidos
+            for (let forma in data) {
+                let valor = data[forma];
+
+                // Formatar o valor como moeda
+                let valorFormatado = parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                let newRow = `
+                    <tr>
+                        <td>${forma}</td>
+                        <td class="text-end">${valorFormatado}</td>
+                    </tr>
+                `;
+                document.getElementById("tabela-vendas-fp-mes").innerHTML += newRow;
+            }
+        })
+        .catch(error => console.error('Erro ao carregar vendas por forma de pagamento: ', error));
+    }
+
+    // Chamar a função para carregar os dados quando a página carregar
+    document.addEventListener('DOMContentLoaded', carregarVendasPorFormaPagamentoMes);
+</script>
+<script>
+    // Função para buscar e exibir os dados de vendas por forma de pagamento no mês
+    function carregarVendasPorFormaPagamentoDia() {
+        fetch("{% url 'vendasxfp_dia' %}")
+        .then(response => response.json())
+        .then(data => {
+            // Limpar a tabela
+            document.getElementById("tabela-vendas-fp-dia").innerHTML = "";
+
+            // Preencher a tabela com os dados recebidos
+            for (let forma in data) {
+                let valor = data[forma];
+
+                // Formatar o valor como moeda
+                let valorFormatado = parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                let newRow = `
+                    <tr>
+                        <td>${forma}</td>
+                        <td class="text-end">${valorFormatado}</td>
+                    </tr>
+                `;
+                document.getElementById("tabela-vendas-fp-dia").innerHTML += newRow;
+            }
+        })
+        .catch(error => console.error('Erro ao carregar vendas por forma de pagamento: ', error));
+    }
+
+    // Chamar a função para carregar os dados quando a página carregar
+    document.addEventListener('DOMContentLoaded', carregarVendasPorFormaPagamentoDia);
+</script>
+
+{% endblock %}

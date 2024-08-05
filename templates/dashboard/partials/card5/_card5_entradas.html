@@ -1,0 +1,31 @@
+<div class="card flex-fill w-100 mb-3 card5">
+    <div class="card-header d-flex">
+        <h5 class="card-title mb-0">Vendas x Mês</h5>
+        <i class="bi bi-bar-chart-fill ms-auto text-success"
+            id="#saidas_mes"
+            style="cursor: pointer;"
+            hx-get="{% url 'card5_saidas' %}"
+            hx-target=".card5"
+            hx-swap="outerHTML"
+            >
+        </i>
+    </div>
+    <div class="card-body py-4">
+        <div class="chart chart-sm">
+            <div class="chartjs-size-monitor">
+                <div class="chartjs-size-monitor-expand">
+                    <div class="">
+
+                    </div>
+                </div>
+                <div class="chartjs-size-monitor-shrink">
+                    <div class="">
+
+                    </div>
+                </div>
+            </div>
+            <canvas id="chartjs-dashboard-line" width="1785" height="756" style="display: block; width: 595px; height: 252px;" class="chartjs-render-monitor">
+            </canvas>                            
+        </div>
+    </div>
+</div>

@@ -42,6 +42,13 @@ class TarefasForms(forms.ModelForm):
                     'id': 'funcionario'
                 }
             ),
+            'recorrencia': forms.Select(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Recorrência',
+                    'id': 'recorrencia'
+                }
+            ),
             'status': forms.CheckboxInput(
                 attrs={
                     'class': 'form-check-input',

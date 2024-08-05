@@ -89,7 +89,7 @@ function atualizarTotalGeral() {
   linhas.forEach(function(row) {
       totalGeral += parseFloat(calcularPrecoTotal(row));
   });
-//   console.log('Total geral calculado:', totalGeral);
+    console.log('Total geral calculado:', totalGeral);
   document.getElementById('total_geral').textContent = 'R$ ' + totalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 //   console.log('Fim da atualização do total geral');
 }
@@ -264,4 +264,12 @@ function extrairPreco(precoText) {
         return parseFloat(match[1].replace('.', '').replace(',', '.'));
     }
     return NaN;
+}
+
+function deleteRows() {
+    // Limpar o conteúdo da tabela
+    var tabela = document.getElementById("lista_item").getElementsByTagName("tbody")[1];
+    tabela.innerHTML = "";
+
+    atualizarTotalGeral();
 }

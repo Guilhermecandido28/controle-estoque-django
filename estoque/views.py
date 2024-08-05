@@ -31,7 +31,7 @@ def estoque(request):
             context = {
             'object': object,
             'form': form,
-            'contagem': total['quantidade_produtos'],
+            'qtd_produtos': total['quantidade_produtos'],
             'soma': total['soma_total'],
             'soma_invs': total['soma_investimento'],
             'baixo_estoque': baixo_estoque['baixo_estoque'],
@@ -42,7 +42,7 @@ def estoque(request):
             context = {
             'object': object,
             'form': form,
-            'contagem': 0,
+            'qtd_produtos': 0,
             'soma': 0,
             'soma_invs': 0,
             'baixo_estoque': 0,

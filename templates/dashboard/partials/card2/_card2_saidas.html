@@ -1,0 +1,25 @@
+{% load custom_filters %}
+<div class="card-body card2">
+    <div class="row">
+        <div class="col mt-0">
+            <h5 class="card-title">Saídas Anual</h5>
+        </div>
+
+        <div class="col-auto">
+            <div class="stat text-danger">
+                <a style="cursor: pointer;"
+                    hx-get="{% url 'card2_entradas' %}"
+                    hx-target=".card2"
+                    hx-swap="outerHTML"
+                >
+                    <i class="bi bi-cash-coin fs-4"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <h1 class="mt-1 mb-3 text-danger">{{saidas_ano|currency}}</h1>
+    <div class="mb-0">
+        <span class="text-success">{{saidas_ano_passado|currency}}</span>
+        <span class="text-muted">Saídas ano passado</span>
+    </div>
+</div>

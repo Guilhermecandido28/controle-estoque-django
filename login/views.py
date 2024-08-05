@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from login.forms import LoginForms, CadastroForms
-from django.contrib.auth.models import  User
+from django.contrib.auth.models import User
 from django.contrib import auth
 from django.contrib import messages
 from rolepermissions.roles import assign_role

@@ -51,6 +51,8 @@ class Estoque(models.Model):
             # Se é uma nova instância e já tem código de barras, verificar se já existe no banco de dados
             while Estoque.objects.filter(codigo_barras=self.codigo_barras).exists():
                 self.codigo_barras = gerar_ean13()  # Gerar um novo código de barras único
+        
+        self.custo = float(self.venda)*0.5
 
         super().save(*args, **kwargs)
 

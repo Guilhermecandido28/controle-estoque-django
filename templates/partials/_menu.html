@@ -1,4 +1,4 @@
-{% load static %}    
+{% load static %}  
 <!-- Menu horizontal -->
 
 
@@ -6,6 +6,7 @@
         <div class="container-fluid">
           <a class="navbar-brand" href="#">JK Modas & Variedades</a>
           <p class="lead m-3">Olá, {{user.username}}!</p>
+          
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNavBar" aria-controls="menuNavBar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -22,7 +23,7 @@
                     <li><a class="dropdown-item" href="{% url 'vendas' %}">Vender</a></li>
                     <li><a class="dropdown-item" href="{% url 'clientes' %}">Clientes</a></li>
                     <li><a class="dropdown-item" href="#">Fornecedor</a></li>
-                    <li><a class="dropdown-item" href="#">Financeiro</a></li>
+                    <li><a class="dropdown-item" href="{% url 'dashboard' %}">Financeiro</a></li>
                     <li><a class="dropdown-item" href="#">Compras</a></li>                    
                     <li><a class="dropdown-item" href="#">Configurações</a></li>                    
                   </ul>
@@ -31,17 +32,40 @@
                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Meu Perfil</a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="#">Perfil</a></li>
-                  <li><a class="dropdown-item" href="#">Notificações</a></li>
                   <li><a class="dropdown-item" href="{% url 'logout' %}">Sair</a></li>
                 </ul>
               </li>
-            </ul>            
+              <li class="nav-item dropdown">
+                <button class="btn-group btn-tertiary position-relative nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                  <i class="bi bi-bell-fill"></i>
+                  <ul id="lista_notifications" class="dropdown-menu">
+                    {% for notification in unread_notifications|slice:":10" %}
+                        <li class="dropdown-item dropdown-link" hx-get="{% url 'marcar_notificacao_lida' notification.id %}" hx-trigger="revelead" hx-swap="afterend">                               
+                            <span class="dropdown-header">{{ notification.title }}</span>                                  
+                            <small class="dropdown-item-text fw-bold">{{ notification.mensagem }}</small>
+                            <small class="text-muted">{{ notification.data_criacao|timesince }} atrás</small>                                
+                        </li>
+                        {% empty %}
+                            <li><a class="dropdown-item" href="#">Nenhuma notificação</a></li>
+                        {% endfor %}
+                        {% if unread_notifications %}
+                        <li><hr class="dropdown-divider"></li>
+                          <li>
+                            <a class="dropdown-item" hx-get="{% url 'marcar_todas_como_lida' %}" hx-trigger="click">Marcar como Lidas</a>
+                          </li>
+                        {% endif %}
+                  </ul>
+                  <span id="nNotifications" class="badge text-bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">{{contagem}}</span>
+                </button>
+              </li>
+            </ul>                       
             <form role="search">
               <div class="input-group">
                   <input class="form-control" type="search" placeholder="Search" aria-label="Search">
                   <button class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
               </div>
             </form>
+            
           </div>
         </div>
       </nav>

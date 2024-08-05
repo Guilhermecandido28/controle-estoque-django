@@ -7,7 +7,7 @@ class AddEstoqueForms(forms.ModelForm):
 
     class Meta:
         model = Estoque
-        exclude = ['id','codigo_barras','data', 'imagem']
+        exclude = ['id','codigo_barras','data', 'imagem', 'custo']
         widgets = {
             'descricao': forms.TextInput(
                 attrs={
@@ -26,8 +26,8 @@ class AddEstoqueForms(forms.ModelForm):
                 attrs={
                 'placeholder': 'cor',
                 'id': 'cor'
-                      }
-                      ),
+                }
+                    ),
             'quantidade': forms.NumberInput(
                 attrs={
                 'id': 'quantidade'
@@ -52,7 +52,6 @@ class AddEstoqueForms(forms.ModelForm):
             'venda': 'Venda:',
             'categoria_id': 'Categoria:',
             'marca_id': 'Marca:',
-            'custo' : 'Custo:',
         }
 
     def clean_descricao(self):

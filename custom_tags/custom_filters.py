@@ -16,13 +16,13 @@ def multiply(value, arg):
 def currency(value):
     
     if value in (None, '', 'NaN'):
-        return 'N/A'
+        return 'R$0,00'
     try:
         value = float(value) if isinstance(value, (str, Decimal)) else value
         return locale.currency(value, grouping=True)
     except (ValueError, TypeError, InvalidOperation) as e:
         print(f"Erro ao converter valor: {e}")
-        return 'N/A'
+        return f'Erro: {e}'
     
 @register.filter(name='forma_pagamento')
 def forma_pagamento(string):
@@ -48,3 +48,8 @@ def vis_venda(string):
     output += f"{elementos_sem_aspas[1]}, {elementos_sem_aspas[2]}, {elementos_sem_aspas[3].replace("'",'').replace(')','')} \n"    
     output += f", {elementos_sem_aspas[0]}. \n"    
     return output
+
+
+
+
+

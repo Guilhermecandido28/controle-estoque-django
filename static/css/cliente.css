@@ -1,0 +1,26 @@
+/* clientes.html */
+.img-rounded {
+    width: 100px; /* largura desejada */
+    height: 100px; /* altura desejada */
+    border-radius: 50%; /* faz a div ficar redonda */
+    overflow: hidden; /* garante que a imagem não ultrapasse a div */
+}
+
+.img-rounded-small {
+    width: 50px; /* largura desejada */
+    height: 50px; /* altura desejada */
+    border-radius: 50%; /* faz a div ficar redonda */
+    overflow: hidden; /* garante que a imagem não ultrapasse a div */
+}
+
+.img-rounded img {
+    width: 100%; /* garante que a imagem ocupe toda a largura da div */
+    height: auto; /* mantém a proporção da imagem */
+    display: block; /* garante que a imagem fique dentro da div corretamente */
+}
+
+.img-rounded-small img {
+    width: 100%; /* garante que a imagem ocupe toda a largura da div */
+    height: auto; /* mantém a proporção da imagem */
+    display: block; /* garante que a imagem fique dentro da div corretamente */
+}

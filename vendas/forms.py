@@ -12,7 +12,7 @@ class VendaForms(forms.Form):
         widget=forms.Select(attrs={'class': 'form-control'}),        
     )
     
-    desconto = forms.DecimalField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    data = forms.DecimalField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
     
     vendedor = forms.ModelChoiceField(queryset=Vendedores.objects.all(), empty_label="Selecione um Vendedor(a)", widget=forms.Select(attrs={'class': 'form-control mb-3'}))
     FORMAS_DE_PAGAMENTO = [

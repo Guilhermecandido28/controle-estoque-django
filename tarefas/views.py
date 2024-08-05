@@ -1,11 +1,11 @@
 from django.shortcuts import render, get_object_or_404, HttpResponse
-from django.http import JsonResponse
+from notifications.signals import notify
+from django.http import JsonResponse, HttpResponseBadRequest
 from .forms import TarefasForms
-from .filters import TarefasFilter
-from django.contrib import messages
 from django.utils import timezone
 from .models import Tarefas
 from django.core.serializers.json import DjangoJSONEncoder
+
 
 
 def tarefas(request):
@@ -14,12 +14,12 @@ def tarefas(request):
     context = {'forms': forms}
     return render(request, template_name, context)
 
-def adicionar_tarefa(request):    
+def adicionar_tarefa(request):
     if request.method == 'POST':
         
         form = TarefasForms(request.POST)
         if form.is_valid():            
-            tarefa = form.save()
+            tarefa = form.save()  
             
             
             # Retornar dados da tarefa para atualização do FullCalendar
@@ -32,6 +32,7 @@ def adicionar_tarefa(request):
                 'responsavel': tarefa.funcionario.nome,
                 'status': tarefa.status,
                 'color' : tarefa.cor,
+                
             })
 
         else:
@@ -64,13 +65,14 @@ def eventos(request):
 
 def editar_tarefa(request, id):    
     editar_tarefa = get_object_or_404(Tarefas, id=id)
-
     
     if request.method == 'POST':
         form = TarefasForms(request.POST, instance=editar_tarefa)
         
         if form.is_valid():
-            form.save()
+            tarefa = form.save()
+
+
             # Acessar os campos do objeto salvo
             tarefa_salva = form.instance
         
@@ -93,6 +95,25 @@ def editar_tarefa(request, id):
     else:
         return JsonResponse({'success': False, 'errors': ['Método não permitido']})
     
+
+def apagar_tarefa(request, id):
+    if request.method == 'GET':
+        tarefa = get_object_or_404(Tarefas, id=id)
+        tarefa.delete() 
+        
+        return JsonResponse({'success': True})
+    else:
+        errors = []            
+        for error in errors:
+            errors.append(f"Erro no campo '{errors}': {error}")
+    return JsonResponse({'success': False, 'errors': errors})
+    
+
+def ver_notificacao(request):
+    print('ver_notificação')
+    return HttpResponse('fndsifo')
+
+
 
 
     

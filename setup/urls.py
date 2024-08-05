@@ -12,4 +12,6 @@ urlpatterns = [
     path('vendedores/', include('vendedores.urls')),        
     path('tarefas/', include('tarefas.urls')),
     path("__debug__/", include("debug_toolbar.urls")),
+    path("notificacao/", include("notification.urls")),
+    path("dashboard/", include('dashboard.urls')),
 ]

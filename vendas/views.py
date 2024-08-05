@@ -17,7 +17,7 @@ lista_preco = []
 def venda(request):
     form = VendaForms()
     form_caixa = CaixaForms() 
-    object_vendas = Vendas.objects.all()
+    object_vendas = Vendas.objects.all().order_by('-data')
     object_filter_vendas = Vendas.objects.select_related('descricao', 'cliente', 'data', 'total') 
     filter_vendas = VendasFilter(request.GET, queryset=object_filter_vendas) 
     
@@ -94,8 +94,10 @@ def salvar_venda(request):
         
         try:
             Vendas.objects.create(descricao=descricao, cliente=cliente, desconto=desconto, forma_pagamento=forma_pagamento, data=data, total=total, vendedor=vendedores)
-            ajustar_estoque(lista_preco)            
+            ajustar_estoque(lista_preco)
+            print(lista_preco)            
             lista_preco.clear()
+            print(lista_preco)
             messages.success(request, 'A venda foi realizada com sucesso!')            
             return render(request, 'vendas/partials/_message.html')
         except Exception as e:

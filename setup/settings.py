@@ -50,10 +50,12 @@ INSTALLED_APPS = [
     'clientes.apps.ClientesConfig',
     'vendas.apps.VendasConfig',
     'vendedores.apps.VendedoresConfig', 
-    'tarefas.apps.TarefasConfig', 
+    'tarefas.apps.TarefasConfig',
+    'dashboard.apps.DashboardConfig', 
     'rest_framework', 
     'django_filters',
     'rolepermissions',
+    'notification.apps.NotificationConfig',
 
     
 ]
@@ -86,6 +88,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'notification.services.notificacao_unread',
+                'notification.services.notificacao_read',
+                'notification.services.contagem_notificacao_n_lidas',
             ],
             'libraries': {
                 'custom_filters': 'custom_tags.custom_filters',

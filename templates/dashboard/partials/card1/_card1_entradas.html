@@ -1,0 +1,23 @@
+{% load custom_filters %}
+<div class="card-body card1">
+    <div class="row">
+        <div class="col mt-0">
+            <h5 class="card-title">Vendas do dia</h5>
+        </div>
+        <div class="col-auto">
+            <div class="stat text-primary">
+                <a style="cursor: pointer;" 
+                hx-get="{% url 'card1_saidas' %}"
+                hx-swap="outerHTML"
+                hx-target=".card1">
+                    <i class="bi bi-cash-coin fs-4 text-success"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <h1 class="mt-1 mb-3 text-success">{{vendas_dia|currency}}</h1>
+    <div class="mb-0">
+        <span class="text-primary fw-bold">{{ vendas_ontem|currency }}</span>
+        <span class="text-muted">Vendidos ontem</span>
+    </div>
+</div>

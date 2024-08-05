@@ -1,0 +1,23 @@
+<div class="card-body card4">
+    <div class="row">
+        <div class="col mt-0">
+            <h5 class="card-title">Dias trabalhados</h5>
+        </div>
+        <div class="col-auto">
+            <div class="stat text-success">
+                <a style="cursor: pointer;"
+                    hx-get="{% url 'card4_saidas' %}"
+                    hx-target=".card4"
+                    hx-swap="outerHTML"
+                >
+                    <i class="bi bi-calendar-date fs-4"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <h1 class="mt-1 mb-3 text-success">25</h1>
+    <div class="mb-0">
+        <span class="text-danger">-2.25%</span>
+        <span class="text-muted">Desde da ultima semana</span>
+    </div>
+</div>
