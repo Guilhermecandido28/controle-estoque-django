@@ -83,7 +83,7 @@ def salvar_venda(request):
             cliente = None
         
         desconto = request.POST.get('desconto') 
-        if desconto == '':
+        if desconto == '' or '?':
             desconto = 0
         
         forma_pagamento = request.POST.get('radio')        
