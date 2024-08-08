@@ -90,7 +90,8 @@ def salvar_venda(request):
         data = datetime.now()        
         desconto_decimal = Decimal(str(desconto))        
         total = sum(item['total'] for item in lista_preco)
-        total = total - (total * desconto_decimal / Decimal(100))  
+        total = total - (total * desconto_decimal / Decimal(100))
+        print(total)  
         
         try:
             Vendas.objects.create(descricao=descricao, cliente=cliente, desconto=desconto, forma_pagamento=forma_pagamento, data=data, total=total, vendedor=vendedores)
