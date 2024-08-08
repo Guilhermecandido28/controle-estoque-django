@@ -14,13 +14,19 @@ def multiply(value, arg):
 
 @register.filter(name='currency')
 def currency(value):
-    
     if value in (None, '', 'NaN'):
-        return 'R$0,00'
+        return 'R$ 0,00'
+
     try:
+        # Convertendo o valor para float se necessário
         value = float(value) if isinstance(value, (str, Decimal)) else value
-        return locale.currency(value, grouping=True)
-    except (ValueError, TypeError, InvalidOperation) as e:
+        
+        # Formatando o valor para 2 casas decimais e adicionando separadores de milhar
+        formatted_value = f'{value:,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.')
+        
+        # Retornando o valor formatado com o símbolo da moeda
+        return f'R$ {formatted_value}'
+    except (ValueError, TypeError) as e:
         print(f"Erro ao converter valor: {e}")
         return f'Erro: {e}'
     
