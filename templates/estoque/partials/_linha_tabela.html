@@ -20,8 +20,8 @@
         <button class="btn" hx-post="{% url 'editar_produto' object.codigo_barras %}"  hx-target="closest tr" hx-swap="outerHTML" title="Editar produto">
             <i class="btn bi bi-pencil fs-4"></i>
         </button>
-        <button class="btn" title="Imprimir Produto" hx-get="{% url 'imprimir_produto' object.codigo_barras %}">
+        <button class="btn" title="Imprimir Produto" onclick="window.open('{% url 'imprimir_produto' object.codigo_barras %}', '_blank')">
             <i class="bi bi-printer fs-4"></i>
-        </button>               
+        </button>              
     </td>
 </tr>

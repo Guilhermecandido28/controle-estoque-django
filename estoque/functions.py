@@ -34,14 +34,14 @@ def gerar_ean13():
 
 
 def criar_etiqueta(codigo_barras, preco, tamanho):
-    # Obtém o diretório do script atual
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # # Obtém o diretório do script atual
+    # script_dir = os.path.dirname(os.path.abspath(__file__))
     
-    # Define o nome do arquivo PDF
-    pdf_filename = os.path.join(script_dir, 'etiqueta.pdf')
-    
+    # # Define o nome do arquivo PDF
+    # pdf_filename = os.path.join(script_dir, 'etiqueta.pdf')
+    buf = BytesIO()
     # Configurações do documento
-    c = canvas.Canvas(pdf_filename, pagesize=(40 * mm, 40 * mm))
+    c = canvas.Canvas(buf, pagesize=(40 * mm, 40 * mm))
 
     # Dimensões da etiqueta (40x40 mm)
     largura_etiqueta = 40 * mm
@@ -83,7 +83,8 @@ def criar_etiqueta(codigo_barras, preco, tamanho):
 
     # Finalizar o PDF
     c.save()
-    return pdf_filename
+    buf.seek(0)
+    return buf
 
 
 
