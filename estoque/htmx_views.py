@@ -10,10 +10,6 @@ from django.contrib import messages
 from django.http import JsonResponse
 from custom_tags import custom_filters
 from .functions import criar_etiqueta
-import win32print
-import win32api
-import os
-import subprocess
 
 
 
