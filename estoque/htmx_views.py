@@ -1,12 +1,20 @@
 from .models import Estoque, CategoriaEstoque, MarcaEstoque
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from .forms import EditarForm, AddEstoqueForms, AddCategoriaForm, AddMarcaForm
 from .filters import EstoqueFilter
 from django.db.models import F
 from django.contrib import messages
 from django.http import JsonResponse
+from custom_tags import custom_filters
+from .functions import criar_etiqueta
+import win32print
+import win32api
+import os
+import subprocess
+
+
 
 
 
@@ -29,6 +37,25 @@ def deletar_produtos(request, id):
     obj = Estoque.objects.get(codigo_barras=id)
     obj.delete()    
     return render(request, template_name)
+
+
+def imprimir_produto(request, id):
+    template_name= 'estoque/print.html'    
+    obj = Estoque.objects.get(codigo_barras=id)
+    pdf = criar_etiqueta(obj.codigo_barras, custom_filters.currency(obj.venda), obj.tamanho)
+    pdf_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'estoque', 'etiqueta.pdf')
+    try:
+        win32api.ShellExecute(
+            0,
+            "print",
+            pdf,
+            None,
+            pdf_path,
+            0
+        )
+    except:
+        subprocess.run(['lp', pdf_path], check=True)
+    return HttpResponse('') 
 
 
 def editar_produto(request, id):

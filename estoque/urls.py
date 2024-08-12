@@ -11,6 +11,7 @@ urlpatterns = [
 htmx_urlpatterns = [    
     path('salvar_produto/', htmx_views.salvar_produtos, name='salvar_produto'),
     path('<int:id>/deletar_produto/', htmx_views.deletar_produtos, name='deletar_produto'),
+    path('<int:id>/imprimir_produto/', htmx_views.imprimir_produto, name='imprimir_produto'),
     path('<int:id>/', htmx_views.editar_produto, name= 'editar_produto'),
     path('<int:id>/update/', htmx_views.update_produto, name= 'update_produto'),
     path('pesquisar_produto/', htmx_views.pesquisar_produtos, name='pesquisar_produto'), 

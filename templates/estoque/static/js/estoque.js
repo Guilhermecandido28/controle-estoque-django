@@ -81,3 +81,4 @@ function renderiza_grafico(){
       const bsToast = new bootstrap.Toast(novoToast, {}); // aplico a função toast do bootstrap
       bsToast.show(); // mando mostrar
   }
+

@@ -46,9 +46,6 @@ def estoque(request):
     return render(request, 'estoque/index_estoque.html', context)
     
 
-
-
-
 def dados_grafico(request):
     dados = Estoque.objects.annotate(mes=TruncMonth('data')).values('mes').annotate(quantidade=Count('id')).order_by('mes')
     dados_formatados = {item['mes'].strftime('%b'): item['quantidade'] for item in dados}
