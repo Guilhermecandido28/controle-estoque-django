@@ -11,6 +11,7 @@ from django.contrib import messages
 from .functions import ajustar_estoque
 from django.db.models.aggregates import Sum
 from decimal import Decimal
+import requests
 
 lista_preco = []
 
@@ -48,14 +49,17 @@ def inserir_venda(request):
             # Aplicar o filtro
             obj = filtro.qs.values('codigo_barras', 'descricao', 'tamanho', 'cor', 'venda')               
             quantidade = request.POST.get('quantidade', None)
+            desconto = request.POST.get('desconto', None)
+            desconto_porcentagem = Decimal(desconto) / Decimal(100)
             if obj.exists():                
                 for item in obj:               
-                    total = int(quantidade) * item['venda']  # Calcula o total
+                    total = Decimal(int(quantidade)) * Decimal(item['venda'])
+                    total = total - total*desconto_porcentagem   # Calcula o total
+                    print(total)
                     item['total'] = total  # Adiciona o total ao dicionário do item
-                    lista_preco.append(item)  
-                                 
+                    lista_preco.append(item) 
                 template_name = 'vendas/partials/_table.html'    
-                context = {'object': obj, 'filtro': filtro, 'quantidade':quantidade}        
+                context = {'object': obj, 'filtro': filtro, 'quantidade':quantidade, 'desconto': desconto}        
                 return render(request, template_name, context)
             else:
                 return JsonResponse({'success': False, 'message': 'Nenhum resultado encontrado'})
@@ -78,33 +82,63 @@ def salvar_venda(request):
             erro = 'Campos obrigatórios não preenchidos!'
             messages.error(request, f'Venda não concluída! Por favor, atualize a página e tente novamente. Erro: {erro}')      
         try:
-             cliente = Clientes.objects.get(pk=cliente_id)
+            cliente = Clientes.objects.get(pk=cliente_id)
         except Exception as e:            
             cliente = None
         
-        desconto = request.POST.get('desconto') 
-        if desconto == '' or '?':
-            desconto = 0
+
         
         forma_pagamento = request.POST.get('radio')        
-        data = datetime.now()        
-        desconto_decimal = Decimal(str(desconto))        
+        data = datetime.now()       
+        
         total = sum(item['total'] for item in lista_preco)
-        total = total - (total * desconto_decimal / Decimal(100))
+
         print(total)  
         
         try:
-            Vendas.objects.create(descricao=descricao, cliente=cliente, desconto=desconto, forma_pagamento=forma_pagamento, data=data, total=total, vendedor=vendedores)
+            # Cria a venda no banco de dados
+            venda = Vendas.objects.create(
+                descricao=descricao,
+                cliente=cliente,
+                forma_pagamento=forma_pagamento,
+                data=data,
+                total=total,
+                vendedor=vendedores
+            )
             ajustar_estoque(lista_preco)
             print(lista_preco)            
+
+            # Gerar o texto do recibo
+            recibo = "RECIBO DE VENDA\n"
+            recibo += f"Data: {data.strftime('%d/%m/%Y %H:%M:%S')}\n"
+            recibo += f"Vendedor: {vendedores.nome}\n"
+            if cliente:
+                recibo += f"Cliente: {cliente.nome}\n"
+            recibo += "\nItens:\n"
+            
+            for item in lista_preco:
+                recibo += f"{item['descricao']} ({item['tamanho']} - {item['cor']}) - R$ {item['total']:.2f}\n\n"
+            
+
+            recibo += f"Total: R$ {total:.2f}\n\n"
+            recibo += f"Forma de Pagamento: {forma_pagamento}\n"
+            recibo += "\nObrigado pela sua compra!\n"
+
+            # Enviar a solicitação POST para a API de impressão
+            url = "http://localhost:8001/api/print/"
+            headers = {"Content-Type": "application/json"}
+            payload = {"text": recibo}
+            
+            response = requests.post(url, headers=headers, json=payload)
+            print(f"Resposta da API de impressão: {response.status_code} - {response.text}")
             lista_preco.clear()
             print(lista_preco)
-            messages.success(request, 'A venda foi realizada com sucesso!')            
+            messages.success(request, 'A venda foi realizada com sucesso!')  
+
             return render(request, 'vendas/partials/_message.html')
         except Exception as e:
             lista_preco.clear()
             messages.error(request, f'A Venda falhou, erro: {e}')           
-            
             return render(request, 'vendas/partials/_message.html')
 
 def movimentacao_dia(request): 

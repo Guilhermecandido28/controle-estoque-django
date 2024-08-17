@@ -6,11 +6,21 @@ register = template.Library()
 
 @register.filter(name='multiply')
 def multiply(value, arg):
-    """Multiplies a number by a given quantity."""
+    """Multiplica um número por uma quantidade."""
     try:
         return float(value) * float(arg)
     except (ValueError, TypeError):
-        pass  # Not numeric, so just return the original value
+        return value  # Retorna o valor original se ocorrer um erro
+    
+@register.filter(name='apply_discount')
+def apply_discount(total, discount):
+    """Aplica um desconto ao total."""
+    try:
+        discount_value = float(discount) / 100
+        total_with_discount = total - (total * discount_value)
+        return total_with_discount
+    except (ValueError, TypeError):
+        return total  # Retorna o valor original se ocorrer um erro
 
 @register.filter(name='currency')
 def currency(value):

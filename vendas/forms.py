@@ -1,9 +1,9 @@
 # forms.py
 from django import forms
 from clientes.models import Clientes
-from .models import Caixa, Vendas, Troca
+from .models import Caixa, Troca
 from vendedores.models import Vendedores
-from estoque.models import Estoque
+
 
 
 class VendaForms(forms.Form):    

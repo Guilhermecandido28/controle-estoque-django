@@ -9,8 +9,10 @@
     <td class="tamanho">{{ item.tamanho }}</td>
     <td class="cor">{{ item.cor }}</td>
     <td class="quantidade">{{ quantidade }}</td>        
-    <td class="preco">{{ quantidade|multiply:item.venda|currency }}</td>
-    <td class="desconto">0</td>    
+    <td class="desconto">{{ desconto }}%</td>    
+    <td class="preco">{{ item.venda|multiply:quantidade|apply_discount:desconto|currency }}</td>
+
+
     <td>
         <button class="btn" hx-delete="{% url 'deletar_venda' item.codigo_barras %}" hx-confirm="Tem certeza que voce deseja Excluir o item?" hx-target="closest tr" hx-swap="outerHTML"><i class="btn bi bi-trash fs-4"></i></button>                
     </td>
