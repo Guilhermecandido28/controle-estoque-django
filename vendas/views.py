@@ -125,7 +125,7 @@ def salvar_venda(request):
             recibo += "\nObrigado pela sua compra!\n"
 
             # Enviar a solicitação POST para a API de impressão
-            url = "http://localhost:8001/api/print/"
+            url = "http://localhost:8000/api/print/"
             headers = {"Content-Type": "application/json"}
             payload = {"text": recibo}
             
