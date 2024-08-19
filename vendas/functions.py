@@ -1,4 +1,5 @@
 from estoque.models import Estoque
+from django.http import JsonResponse
 
 def ajustar_estoque(lista):
     for item in lista:
