@@ -124,13 +124,7 @@ def salvar_venda(request):
             recibo += f"Forma de Pagamento: {forma_pagamento}\n"
             recibo += "\nObrigado pela sua compra!\n"
 
-            # Enviar a solicitação POST para a API de impressão
-            url = "http://localhost:8000/api/print/"
-            headers = {"Content-Type": "application/json"}
-            payload = {"text": recibo}
-            
-            response = requests.post(url, headers=headers, json=payload)
-            print(f"Resposta da API de impressão: {response.status_code} - {response.text}")
+
             lista_preco.clear()
             print(lista_preco)
             messages.success(request, 'A venda foi realizada com sucesso!')  
@@ -277,3 +271,9 @@ def cancelar_troca(request):
     object_vendas = Vendas.objects.all()
     context = {'object_venda': object_vendas}
     return render(request, template_name, context)
+
+
+def recibo(request):
+    recibo = Vendas.objects.last()
+    recibo = recibo.descricao
+    return JsonResponse({"recibo": recibo})
