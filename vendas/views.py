@@ -11,7 +11,8 @@ from django.contrib import messages
 from .functions import ajustar_estoque
 from django.db.models.aggregates import Sum
 from decimal import Decimal
-import requests
+from .publisher import RabbitMQPublisher
+import json
 
 lista_preco = []
 
@@ -105,25 +106,32 @@ def salvar_venda(request):
                 total=total,
                 vendedor=vendedores
             )
-            ajustar_estoque(lista_preco)
+            
             print(lista_preco)            
 
-            # Gerar o texto do recibo
-            recibo = "RECIBO DE VENDA\n"
-            recibo += f"Data: {data.strftime('%d/%m/%Y %H:%M:%S')}\n"
-            recibo += f"Vendedor: {vendedores.nome}\n"
-            if cliente:
-                recibo += f"Cliente: {cliente.nome}\n"
-            recibo += "\nItens:\n"
+
+
             
             for item in lista_preco:
-                recibo += f"{item['descricao']} ({item['tamanho']} - {item['cor']}) - R$ {item['total']:.2f}\n\n"
-            
+                recibo = f"{item['descricao']} ({item['tamanho']} - {item['cor']}) - R$ {item['total']:.2f}\n\n"
 
-            recibo += f"Total: R$ {total:.2f}\n\n"
-            recibo += f"Forma de Pagamento: {forma_pagamento}\n"
-            recibo += "\nObrigado pela sua compra!\n"
+            message = json.dumps({
+                "data": data.strftime('%d/%m/%Y %H:%M:%S'),
+                "vendedor": vendedores.nome,
+                "cliente": cliente.nome if cliente else "",
+                "forma_pagamento": forma_pagamento,
+                "total": float(total),
+                "recibo": recibo
+                
+                }).encode('latin1')
 
+            try:
+                publisher = RabbitMQPublisher()
+                print("Publisher criado com sucesso.")
+                publisher.send_message(message)
+                print("Mensagem enviada para RabbitMQ.")
+            except Exception as e:
+                print(f"Erro ao enviar mensagem para o RabbitMQ: {e}")
 
             lista_preco.clear()
             print(lista_preco)
