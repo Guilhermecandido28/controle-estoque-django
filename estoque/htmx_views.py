@@ -48,10 +48,17 @@ def imprimir_produto(request, id):
 
 
 def editar_produto(request, id):
-    template_name = 'estoque/partials/estoque_forms.html'    
-    obj = Estoque.objects.get(codigo_barras=id)    
-    form = EditarForm(request.POST or None, instance=obj)
+    template_name = 'estoque/partials/estoque_forms.html'
+    obj = Estoque.objects.get(codigo_barras=id)
+    print('Instância:', obj)
+    print('Categoria:', type(obj.categoria))
+    print('Marca:', type(obj.marca))
+    
+    form = EditarForm(request.POST or None, instance=obj)    
+
+    
     context = {'object': obj, 'form': form}
+
     return render(request, template_name, context)
 
 

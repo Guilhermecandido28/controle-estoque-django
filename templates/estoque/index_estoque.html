@@ -64,33 +64,7 @@
                 </div>
             </div>         
         </div>
-        <div class="col-12 col-md-12 col-lg-12 col-xl-9">                
-            <div class="bg-custom card h-100">
-                <div class="card-body mt-5">
-                    <canvas  id="dashbord"></canvas>
-                </div>
-            </div>         
-        </div>
-        <div class="col-12 col-md-12 col-lg-12">                
-            <div class="bg-custom card h-100">
-                <div class="card-body">
-                    <h6 class="lead card-title text-center">PESQUISAR</h6>
-                    <form action="" class="row mb-3 g-2">
-                        {% for field in filter.form %}
-                        <div class="col-12">
-                            <div class="form-floating my-3">                                    
-                                {{ field }}
-                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        <div class="col-12">
-                            <button class="btn btn-outline-dark w-100 h-100" type="submit" hx-post="{% url 'pesquisar_produto' %}" hx-target="#lista_itens" hx-swap="outerHTML">Pesquisar</button>
-                        </div>                            
-                    </form>
-                </div>
-            </div>         
-        </div>
+        
         <div class="col-12 col-md-12 col-lg-12 col-xl-12">                
             <div class="bg-custom card h-100">
                 <div class="card-body">
@@ -212,6 +186,33 @@
                     </form>
                 </div>
             </div>
+        </div>
+        <div class="col-12 col-md-12 col-lg-12 col-xl-9">                
+            <div class="bg-custom card h-100">
+                <div class="card-body mt-5">
+                    <canvas  id="dashbord"></canvas>
+                </div>
+            </div>         
+        </div>
+        <div class="col-12 col-md-12 col-lg-12">                
+            <div class="bg-custom card h-100">
+                <div class="card-body">
+                    <h6 class="lead card-title text-center">PESQUISAR</h6>
+                    <form action="" class="row mb-3 g-2">
+                        {% for field in filter.form %}
+                        <div class="col-12">
+                            <div class="form-floating my-3">                                    
+                                {{ field }}
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <div class="col-12">
+                            <button class="btn btn-outline-dark w-100 h-100" type="submit" hx-post="{% url 'pesquisar_produto' %}" hx-target="#lista_itens" hx-swap="outerHTML">Pesquisar</button>
+                        </div>                            
+                    </form>
+                </div>
+            </div>         
         </div>
     </div>
 </div>  

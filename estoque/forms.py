@@ -82,16 +82,15 @@ class EditarForm(forms.ModelForm):
     required_css_class = 'required' 
 
 
-    categoria = forms.ModelChoiceField(queryset=CategoriaEstoque.objects.all(), empty_label=None)
-    marca = forms.ModelChoiceField(queryset=MarcaEstoque.objects.all(), empty_label=None)
-
     class Meta:
         model = Estoque
-        fields = ('descricao', 'tamanho', 'cor', 'quantidade', 'fornecedor', 'venda')
+        fields = ('descricao','categoria','marca','tamanho', 'cor', 'quantidade', 'fornecedor', 'venda')
         
 
     def __init__(self, *args, **kwargs):
         super(EditarForm, self).__init__(*args, **kwargs)
+        self.fields['categoria'].queryset = CategoriaEstoque.objects.all()
+        self.fields['marca'].queryset = MarcaEstoque.objects.all()
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
     
@@ -119,6 +118,10 @@ class AddCategoriaForm(forms.ModelForm):
         fields = ('categoria',)
         widgets = {'categoria': forms.TextInput(attrs={'class': 'form-control', 'id':'nova_categoria'})} 
 
+    def clean_categoria(self):
+        categoria = self.cleaned_data['categoria']
+        return categoria.title()
+
     def __init__(self, *args, **kwargs):
         super(AddCategoriaForm, self).__init__(*args, **kwargs)        
         for name, field in self.fields.items():
@@ -128,7 +131,11 @@ class AddMarcaForm(forms.ModelForm):
     class Meta:
         model = MarcaEstoque
         fields = ('marca',)
-        widgets = {'marca': forms.TextInput(attrs={'id':'nova_marca'})} 
+        widgets = {'marca': forms.TextInput(attrs={'id':'nova_marca'})}
+
+    def clean_marca(self):
+        marca = self.cleaned_data['marca']
+        return marca.title() 
 
     def __init__(self, *args, **kwargs):
         super(AddMarcaForm, self).__init__(*args, **kwargs)        

@@ -33,7 +33,6 @@ class Estoque(models.Model):
     cor = models.CharField(max_length = 200, default= "")
     custo = models.DecimalField(max_digits=20, decimal_places=2, default = 1)
     venda = models.DecimalField(max_digits=20, decimal_places=2, default = 1)
-    imagem = models.BinaryField(null=True, blank=True)
     data = models.DateField(default=datetime.now)
 
 
