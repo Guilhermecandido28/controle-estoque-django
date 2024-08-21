@@ -1,9 +1,10 @@
 from vendas.models import Vendas
-from .models import EventoVenda, Vendedores
+from estoque.models import Estoque
+from .models import EventoVenda
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-from decimal import Decimal
+from django.db.models import F
 
 @receiver(post_save, sender=Vendas)
 def cria_evento_venda(sender, instance, created, **kwargs):
@@ -27,16 +28,29 @@ def cria_evento_venda(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Vendas)
 def atualizar_produtos_vendidos(sender, instance, **kwargs):
-    venda = instance.vendedor    
-    try:
-        vendedor = Vendedores.objects.get(nome=venda)        
-        vendedor.total_em_vendas += instance.total        
-        vendedor.comissao += instance.total * Decimal(vendedor.porcentegem_comissao/100)        
-        vendedor.save()        
-    except Vendedores.DoesNotExist:
-        print(f'Vendedor com o nome {venda} não encontrado.')
-    except Exception as e:
-        print(f'Erro ao atualizar produtos vendidos: {e}')
+    venda = instance
+    
+    produtos_info = venda.descricao 
 
+    for produto_info in produtos_info.split(';'):
+        produto_info = produto_info.strip()
+        if produto_info:
+            partes = produto_info.split(', ')
+            if len(partes) != 5:
+                print(f"Formato incorreto para: {produto_info}")
+                continue
+            
+            codigo_barras, descricao, tamanho, cor, quantidade = partes
+            quantidade = int(quantidade)
+            
+            # Atualiza o estoque
+            try:
+                estoque_item = Estoque.objects.get(codigo_barras=codigo_barras, tamanho=tamanho, cor=cor)
+                estoque_item.quantidade = F('quantidade') - quantidade
+                estoque_item.save()
+            except Estoque.DoesNotExist:
+                print(f"Item de estoque não encontrado: {codigo_barras}, {descricao}, {tamanho}, {cor}")
+    
+    print("Estoque atualizado com sucesso.")
 
     
