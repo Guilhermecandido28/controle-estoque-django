@@ -13,10 +13,11 @@ from django.db.models.aggregates import Sum
 from decimal import Decimal
 from .publisher import RabbitMQPublisher
 import json
-from time import sleep
+from django.contrib.auth.decorators import login_required
 
 lista_preco = []
 
+@login_required
 def venda(request):
     form = VendaForms()
     form_caixa = CaixaForms() 
