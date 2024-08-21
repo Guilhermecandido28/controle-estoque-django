@@ -49,59 +49,96 @@ def venda(request):
 
 def inserir_venda(request): 
     if request.method == 'POST':
+        print("Método POST recebido")
         cod_barras = request.POST.get('codigo_barras', None)
+        print(f"Código de barras recebido: {cod_barras}")
 
         if cod_barras and len(cod_barras) == 13:
+            print("Código de barras válido com 13 caracteres")
             filtro = CodBarrasFilter(request.POST, queryset=Estoque.objects.all())
+            print("Filtro de código de barras aplicado")
+            
             # Aplicar o filtro
-            obj = filtro.qs.values('codigo_barras', 'descricao', 'tamanho', 'cor', 'venda')               
+            obj = filtro.qs.values('codigo_barras', 'descricao', 'tamanho', 'cor', 'venda')
+            print(f"Resultados do filtro: {obj}")
+            
             quantidade = request.POST.get('quantidade', None)
+            print(f"Quantidade recebida: {quantidade}")
+            
             desconto = request.POST.get('desconto', None)
+            print(f"Desconto recebido: {desconto}")
+            
             desconto_porcentagem = Decimal(desconto) / Decimal(100)
-            if obj.exists():                
-                for item in obj:               
+            print(f"Desconto convertido para porcentagem: {desconto_porcentagem}")
+            
+            if obj.exists():
+                print("Objeto existe no estoque")
+                for item in obj:
                     total = Decimal(int(quantidade)) * Decimal(item['venda'])
-                    total = total - total*desconto_porcentagem   # Calcula o total                    
+                    total = total - total * desconto_porcentagem  # Calcula o total
+                    print(f"Total calculado para o item: {total}")
+                    
                     item['total'] = total  # Adiciona o total ao dicionário do item
                     item['quantidade'] = quantidade
-                    lista_preco.append(item) 
-                template_name = 'vendas/partials/_table.html'    
-                context = {'object': obj, 'filtro': filtro, 'quantidade':quantidade, 'desconto': desconto}        
+                    lista_preco.append(item)
+                    print(f"Item adicionado à lista de preços: {item}")
+                
+                template_name = 'vendas/partials/_table.html'
+                context = {'object': obj, 'filtro': filtro, 'quantidade': quantidade, 'desconto': desconto}
+                print(f"Contexto enviado para o template: {context}")
                 return render(request, template_name, context)
             else:
+                print("Nenhum resultado encontrado no estoque")
                 return JsonResponse({'success': False, 'message': 'Nenhum resultado encontrado'})
         else:
             print("O código de barras deve ter 13 caracteres")
             return HttpResponseBadRequest("O código de barras deve ter 13 caracteres")
 
+    print("Método não permitido")
     return JsonResponse({'success': False, 'message': 'Método não permitido'})
+
 
 def salvar_venda(request):    
     if request.method == 'POST':
         try:
+            print("Obtendo valores de 'lista_preco'")
             valores = [(item['codigo_barras'], item['descricao'], item['tamanho'], item['cor'], item['quantidade']) for item in lista_preco]
             descricao = [', '.join(tupla) for tupla in valores]
-            descricao = '; '.join(descricao)       
-            vendedor_id = request.POST.get('vendedor')                
-            vendedores = Vendedores.objects.get(id=vendedor_id)            
-            cliente_id = request.POST.get('cliente')  
+            descricao = '; '.join(descricao)
+            print(f"Descrição gerada: {descricao}")
+            
+            vendedor_id = request.POST.get('vendedor') 
+            print(f"Vendedor ID obtido: {vendedor_id}")
+            
+            vendedores = Vendedores.objects.get(id=vendedor_id)
+            print(f"Vendedor obtido: {vendedores}")
+            
+            cliente_id = request.POST.get('cliente') 
+            print(f"Cliente ID obtido: {cliente_id}")
         except ValueError:
             erro = 'Campos obrigatórios não preenchidos!'
+            print(f"Erro: {erro}")
             messages.error(request, f'Venda não concluída! Por favor, atualize a página e tente novamente. Erro: {erro}')      
+        
         try:
             cliente = Clientes.objects.get(pk=cliente_id)
-        except Exception as e:            
-            cliente = None
-        
+            print(f"Cliente obtido: {cliente}")
+        except Exception as e:
+            print(f"Erro ao obter cliente: {e}")
+            cliente = None       
 
-        
         forma_pagamento = request.POST.get('radio')        
+        print(f"Forma de pagamento obtida: {forma_pagamento}")
+
         data = datetime.now()       
+        print(f"Data atual: {data}")
         
         total = sum(item['total'] for item in lista_preco)
+        print(f"Total calculado: {total}")
         
         try:
             # Cria a venda no banco de dados
+            print("Criando venda no banco de dados...")
             venda = Vendas.objects.create(
                 descricao=descricao,
                 cliente=cliente,
@@ -110,9 +147,10 @@ def salvar_venda(request):
                 total=total,
                 vendedor=vendedores
             )
-
+            print(f"Venda criada: {venda}")
 
             try:
+                print("Iniciando geração do recibo...")
                 recibo = {'descricao': [], 'tamanho': [], 'cor': [], 'venda': [], 'quantidade':[]}  # Inicializamos as strings como listas
                 
                 for item in lista_preco:
@@ -128,13 +166,13 @@ def salvar_venda(request):
                 recibo['cor'] = ', '.join(recibo['cor'])
                 recibo['venda'] = ', '.join([f"R$ {venda:.2f}" for venda in recibo['venda']])
                 recibo['quantidade'] = ', '.join(recibo['quantidade'])
-
+                print(f"Recibo gerado: {recibo}")
                 
             except Exception as e:
                 print(f'Erro ao criar recibo: {e}')
 
-
             try:
+                print("Serializando mensagem para RabbitMQ...")
                 message = json.dumps({
                     "data": data.strftime('%d/%m/%Y %H:%M:%S'),
                     "vendedor": vendedores.nome,
@@ -142,12 +180,13 @@ def salvar_venda(request):
                     "forma_pagamento": forma_pagamento,
                     "total": float(total),
                     "recibo": recibo
-                    
-                    }).encode('latin1')
+                }).encode('latin1')
+                print(f"Mensagem serializada: {message}")
             except Exception as e:
-                print(f'erro ao serializar mensagem: {e}')
+                print(f'Erro ao serializar mensagem: {e}')
 
             try:
+                print("Criando RabbitMQPublisher...")
                 publisher = RabbitMQPublisher()
                 print("Publisher criado com sucesso.")
                 publisher.send_message(message)
@@ -156,14 +195,18 @@ def salvar_venda(request):
                 print(f"Erro ao enviar mensagem para o RabbitMQ: {e}")
 
             lista_preco.clear()
-            
+            print("Lista de preços limpa.")
+
             messages.success(request, 'A venda foi realizada com sucesso!')  
 
             return render(request, 'vendas/partials/_message.html')
         except Exception as e:
+            print(f"Erro ao criar venda: {e}")
             lista_preco.clear()
+            print("Lista de preços limpa.")
             messages.error(request, f'A Venda falhou, erro: {e}')           
             return render(request, 'vendas/partials/_message.html')
+
 
 def movimentacao_dia(request): 
     # Obtém a data de hoje
