@@ -134,26 +134,26 @@ def salvar_venda(request):
                 print(f'Erro ao criar recibo: {e}')
 
 
-            # try:
-            #     message = json.dumps({
-            #         "data": data.strftime('%d/%m/%Y %H:%M:%S'),
-            #         "vendedor": vendedores.nome,
-            #         "cliente": cliente.nome if cliente else "",
-            #         "forma_pagamento": forma_pagamento,
-            #         "total": float(total),
-            #         "recibo": recibo
+            try:
+                message = json.dumps({
+                    "data": data.strftime('%d/%m/%Y %H:%M:%S'),
+                    "vendedor": vendedores.nome,
+                    "cliente": cliente.nome if cliente else "",
+                    "forma_pagamento": forma_pagamento,
+                    "total": float(total),
+                    "recibo": recibo
                     
-            #         }).encode('latin1')
-            # except Exception as e:
-            #     print(f'erro ao serializar mensagem: {e}')
+                    }).encode('latin1')
+            except Exception as e:
+                print(f'erro ao serializar mensagem: {e}')
 
-            # try:
-            #     publisher = RabbitMQPublisher()
-            #     print("Publisher criado com sucesso.")
-            #     publisher.send_message(message)
-            #     print("Mensagem enviada para RabbitMQ.")
-            # except Exception as e:
-            #     print(f"Erro ao enviar mensagem para o RabbitMQ: {e}")
+            try:
+                publisher = RabbitMQPublisher()
+                print("Publisher criado com sucesso.")
+                publisher.send_message(message)
+                print("Mensagem enviada para RabbitMQ.")
+            except Exception as e:
+                print(f"Erro ao enviar mensagem para o RabbitMQ: {e}")
 
             lista_preco.clear()
             
