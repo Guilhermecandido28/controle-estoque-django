@@ -22,7 +22,7 @@ class Vendedores(models.Model):
 class EventoVenda(models.Model):
     vendedor = models.ForeignKey(Vendedores, on_delete=models.DO_NOTHING)
     data = models.DateTimeField(default=timezone.now)
-    produto = models.CharField(max_length=50)
+    produto = models.CharField(max_length=500)
     total = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
     class Meta:
