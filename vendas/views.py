@@ -13,6 +13,7 @@ from django.db.models.aggregates import Sum
 from decimal import Decimal
 from .publisher import RabbitMQPublisher
 import json
+from time import sleep
 
 lista_preco = []
 
@@ -44,7 +45,8 @@ def venda(request):
 
 def inserir_venda(request): 
     if request.method == 'POST':
-        cod_barras = request.POST.get('codigo_barras', None)        
+        cod_barras = request.POST.get('codigo_barras', None)
+
         if cod_barras and len(cod_barras) == 13:
             filtro = CodBarrasFilter(request.POST, queryset=Estoque.objects.all())
             # Aplicar o filtro
@@ -55,8 +57,7 @@ def inserir_venda(request):
             if obj.exists():                
                 for item in obj:               
                     total = Decimal(int(quantidade)) * Decimal(item['venda'])
-                    total = total - total*desconto_porcentagem   # Calcula o total
-                    print(total)
+                    total = total - total*desconto_porcentagem   # Calcula o total                    
                     item['total'] = total  # Adiciona o total ao dicionário do item
                     lista_preco.append(item) 
                 template_name = 'vendas/partials/_table.html'    

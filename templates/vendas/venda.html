@@ -15,7 +15,7 @@
                         <div class="input-group pe-5">
                             {{ field }}
                             <button class="btn btn-outline-secondary"
-                            type="submit">
+                            hx-post= "{% url 'codigo_barras' %}", hx-target= '#lista_item',hx-trigger= 'keydown[Enter]', hx-swap= 'beforeend'>
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
@@ -160,6 +160,16 @@
       renderiza_grafico1()        
   }
   
+</script>
+<script>
+  document.addEventListener('htmx:afterRequest', function(evt) {
+      // Seleciona o campo de código de barras pelo nome
+      const input = document.querySelector('input[name="codigo_barras"]');
+      if (input) {
+          input.value = ''; // Limpa o campo após a requisição HTMX ser concluída
+          input.focus();    // Retorna o foco ao campo para facilitar a próxima entrada
+      }
+  });
 </script>
 
 

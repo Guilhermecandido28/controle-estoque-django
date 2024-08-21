@@ -11,7 +11,7 @@
                     <form method="post">
                         {% csrf_token %}
                         <div class="main-container">
-                            <h2>Formas de Pagamento</h2>                        
+                            <h3>Formas de Pagamento</h3>                        
                             {% for radio in form.radio %}
                                 <div class="radio-buttons">
                                     <label class="custom-radio">                                    
@@ -25,22 +25,16 @@
                                     </label>
                                 </div>
                             {% endfor %}                                              
-                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3 col-5 p-2">
+                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3 col-6 p-2">
                                 <div class="form-floating">
                                     {{ form.cliente }}
-                                    <label for="{{ field.id_for_label }}" class="form-label">{{ form.cliente.label_tag }}</label>                            
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ form.cliente.label_tag }}</label>   
                                 </div>
-                            </div>
-                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3 col-5 p-2">
-                                <div class="form-floating">
-                                    {{ form.desconto }}
-                                    <label for="{{ field.id_for_label }}" class="form-label">{{ form.desconto.label_tag }}</label>                            
-                                </div>
-                            </div>
-                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3 col-12"></div>
+                            </div>                            
+                            <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3 col-6 pt-3">
                                 <div class="form-floating">
                                     {{ form.vendedor }}
-                                    <label for="{{ field.id_for_label }}" class="form-label">{{ form.vendedor.label_tag }}</label>                            
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ form.vendedor.label_tag }}</label>   
                                 </div>
                             </div>
                             <div class="d-flex flex-fill justify-content-center text-center flex-column gap-3">
