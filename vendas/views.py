@@ -19,6 +19,9 @@ lista_preco = []
 
 @login_required
 def venda(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Faça o login para acessar o sistema.')
+        return redirect('login')
     form = VendaForms()
     form_caixa = CaixaForms() 
     object_vendas = Vendas.objects.all().order_by('-data')
