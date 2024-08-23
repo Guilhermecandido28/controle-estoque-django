@@ -1,7 +1,9 @@
 {% extends 'partials/base.html'%}
 {% load static %}
+{% load permission_tags %}
 {% load custom_filters %}
 {% block content %}
+{% if user|has_role:'gerente' %}
 <main class="content">
     <div class="container-fluid p-5">
         <div class="row mb-3">
@@ -250,5 +252,9 @@
     // Chamar a função para carregar os dados quando a página carregar
     document.addEventListener('DOMContentLoaded', carregarVendasPorFormaPagamentoDia);
 </script>
+
+{% else %}
+    <h1>Você não tem permissão para ver isto.</h1>
+{% endif %}
 
 {% endblock %}

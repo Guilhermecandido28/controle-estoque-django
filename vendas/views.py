@@ -115,97 +115,100 @@ def salvar_venda(request):
             
             cliente_id = request.POST.get('cliente') 
             print(f"Cliente ID obtido: {cliente_id}")
+            
+        
+            try:
+                cliente = Clientes.objects.get(pk=cliente_id)
+                print(f"Cliente obtido: {cliente}")
+            except Exception as e:
+                print(f"Erro ao obter cliente: {e}")
+                cliente = None       
+
+            forma_pagamento = request.POST.get('radio')        
+            print(f"Forma de pagamento obtida: {forma_pagamento}")
+
+            data = datetime.now()       
+            print(f"Data atual: {data}")
+            
+            total = sum(item['total'] for item in lista_preco)
+            print(f"Total calculado: {total}")
+            
+            try:
+                # Cria a venda no banco de dados
+                print("Criando venda no banco de dados...")
+                venda = Vendas.objects.create(
+                    descricao=descricao,
+                    cliente=cliente,
+                    forma_pagamento=forma_pagamento,
+                    data=data,
+                    total=total,
+                    vendedor=vendedores
+                )
+                print(f"Venda criada: {venda}")
+
+                try:
+                    print("Iniciando geração do recibo...")
+                    recibo = {'descricao': [], 'tamanho': [], 'cor': [], 'venda': [], 'quantidade':[]}  # Inicializamos as strings como listas
+                    
+                    for item in lista_preco:
+                        recibo['descricao'].append(item['descricao'])
+                        recibo['tamanho'].append(item['tamanho'])
+                        recibo['cor'].append(item['cor'])
+                        recibo['venda'].append(item['venda'])
+                        recibo['quantidade'].append(item['quantidade'])
+                    
+                    # Convertendo as listas para strings, unindo os valores com ', '
+                    recibo['descricao'] = ', '.join(recibo['descricao'])
+                    recibo['tamanho'] = ', '.join(recibo['tamanho'])
+                    recibo['cor'] = ', '.join(recibo['cor'])
+                    recibo['venda'] = ', '.join([f"R$ {venda:.2f}" for venda in recibo['venda']])
+                    recibo['quantidade'] = ', '.join(recibo['quantidade'])
+                    print(f"Recibo gerado: {recibo}")
+                    
+                except Exception as e:
+                    print(f'Erro ao criar recibo: {e}')
+
+                try:
+                    print("Serializando mensagem para RabbitMQ...")
+                    message = json.dumps({
+                        "data": data.strftime('%d/%m/%Y %H:%M:%S'),
+                        "vendedor": vendedores.nome,
+                        "cliente": cliente.nome if cliente else "",
+                        "forma_pagamento": forma_pagamento,
+                        "total": float(total),
+                        "recibo": recibo
+                    }).encode('latin1')
+                    print(f"Mensagem serializada: {message}")
+                except Exception as e:
+                    print(f'Erro ao serializar mensagem: {e}')
+
+                try:
+                    print("Criando RabbitMQPublisher...")
+                    publisher = RabbitMQPublisher()
+                    print("Publisher criado com sucesso.")
+                    publisher.send_message(message)
+                    print("Mensagem enviada para RabbitMQ.")
+                except Exception as e:
+                    print(f"Erro ao enviar mensagem para o RabbitMQ: {e}")
+
+                lista_preco.clear()
+                print("Lista de preços limpa.")
+
+                messages.success(request, 'A venda foi realizada com sucesso!')  
+
+                return render(request, 'vendas/partials/_message.html')
+            except Exception as e:
+                print(f"Erro ao criar venda: {e}")
+                lista_preco.clear()
+                print("Lista de preços limpa.")
+                messages.error(request, f'A Venda falhou, erro: {e}')           
+                return render(request, 'vendas/partials/_message.html')
         except ValueError:
             erro = 'Campos obrigatórios não preenchidos!'
             print(f"Erro: {erro}")
-            messages.error(request, f'Venda não concluída! Por favor, atualize a página e tente novamente. Erro: {erro}')      
-        
-        try:
-            cliente = Clientes.objects.get(pk=cliente_id)
-            print(f"Cliente obtido: {cliente}")
-        except Exception as e:
-            print(f"Erro ao obter cliente: {e}")
-            cliente = None       
-
-        forma_pagamento = request.POST.get('radio')        
-        print(f"Forma de pagamento obtida: {forma_pagamento}")
-
-        data = datetime.now()       
-        print(f"Data atual: {data}")
-        
-        total = sum(item['total'] for item in lista_preco)
-        print(f"Total calculado: {total}")
-        
-        try:
-            # Cria a venda no banco de dados
-            print("Criando venda no banco de dados...")
-            venda = Vendas.objects.create(
-                descricao=descricao,
-                cliente=cliente,
-                forma_pagamento=forma_pagamento,
-                data=data,
-                total=total,
-                vendedor=vendedores
-            )
-            print(f"Venda criada: {venda}")
-
-            try:
-                print("Iniciando geração do recibo...")
-                recibo = {'descricao': [], 'tamanho': [], 'cor': [], 'venda': [], 'quantidade':[]}  # Inicializamos as strings como listas
-                
-                for item in lista_preco:
-                    recibo['descricao'].append(item['descricao'])
-                    recibo['tamanho'].append(item['tamanho'])
-                    recibo['cor'].append(item['cor'])
-                    recibo['venda'].append(item['venda'])
-                    recibo['quantidade'].append(item['quantidade'])
-                
-                # Convertendo as listas para strings, unindo os valores com ', '
-                recibo['descricao'] = ', '.join(recibo['descricao'])
-                recibo['tamanho'] = ', '.join(recibo['tamanho'])
-                recibo['cor'] = ', '.join(recibo['cor'])
-                recibo['venda'] = ', '.join([f"R$ {venda:.2f}" for venda in recibo['venda']])
-                recibo['quantidade'] = ', '.join(recibo['quantidade'])
-                print(f"Recibo gerado: {recibo}")
-                
-            except Exception as e:
-                print(f'Erro ao criar recibo: {e}')
-
-            try:
-                print("Serializando mensagem para RabbitMQ...")
-                message = json.dumps({
-                    "data": data.strftime('%d/%m/%Y %H:%M:%S'),
-                    "vendedor": vendedores.nome,
-                    "cliente": cliente.nome if cliente else "",
-                    "forma_pagamento": forma_pagamento,
-                    "total": float(total),
-                    "recibo": recibo
-                }).encode('latin1')
-                print(f"Mensagem serializada: {message}")
-            except Exception as e:
-                print(f'Erro ao serializar mensagem: {e}')
-
-            try:
-                print("Criando RabbitMQPublisher...")
-                publisher = RabbitMQPublisher()
-                print("Publisher criado com sucesso.")
-                publisher.send_message(message)
-                print("Mensagem enviada para RabbitMQ.")
-            except Exception as e:
-                print(f"Erro ao enviar mensagem para o RabbitMQ: {e}")
-
-            lista_preco.clear()
-            print("Lista de preços limpa.")
-
-            messages.success(request, 'A venda foi realizada com sucesso!')  
-
-            return render(request, 'vendas/partials/_message.html')
-        except Exception as e:
-            print(f"Erro ao criar venda: {e}")
-            lista_preco.clear()
-            print("Lista de preços limpa.")
-            messages.error(request, f'A Venda falhou, erro: {e}')           
-            return render(request, 'vendas/partials/_message.html')
+            messages.error(request, f'Venda não concluída! Por favor, atualize a página e tente novamente. Erro: {erro}')
+            lista_preco.clear() 
+            return render(request, 'vendas/partials/_message.html') 
 
 
 def movimentacao_dia(request): 
@@ -272,7 +275,7 @@ def deletar_venda(request, id):
     global lista_preco
     id_str = str(id)
     lista_preco = [item for item in lista_preco if item['codigo_barras'] != id_str]    
-              
+    print(lista_preco)
     return render(request, template_name)
 
 
