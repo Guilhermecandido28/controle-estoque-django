@@ -82,7 +82,7 @@ def inserir_venda(request):
                     item['quantidade'] = quantidade
                     lista_preco.append(item)
                     print(f"Item adicionado à lista de preços: {item}")
-                request.session['lista_preco'] = lista_preco
+                
                 template_name = 'vendas/partials/_table.html'
                 context = {'object': obj, 'filtro': filtro, 'quantidade': quantidade, 'desconto': desconto}
                 print(f"Contexto enviado para o template: {context}")
