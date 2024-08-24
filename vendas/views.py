@@ -13,6 +13,7 @@ from django.db.models.aggregates import Sum
 from decimal import Decimal
 from .publisher import RabbitMQPublisher
 import json
+
 from django.contrib.auth.decorators import login_required
 
 lista_preco = []
@@ -79,11 +80,13 @@ def inserir_venda(request):
                     total = total - total * desconto_porcentagem  # Calcula o total
                     print(f"Total calculado para o item: {total}")
                     
-                    item['total'] = total  # Adiciona o total ao dicionário do item
+                    item['total'] = float(total)  # Adiciona o total ao dicionário do item
                     item['quantidade'] = quantidade
+                    item['venda'] = float(item['venda'])
                     lista_preco.append(item)
                     print(f"Item adicionado à lista de preços: {item}")
-                
+                request.session['lista_preco'] = lista_preco
+                print(f'essa é a requisição: {request.session['lista_preco']}')
                 template_name = 'vendas/partials/_table.html'
                 context = {'object': obj, 'filtro': filtro, 'quantidade': quantidade, 'desconto': desconto}
                 print(f"Contexto enviado para o template: {context}")
@@ -102,6 +105,8 @@ def inserir_venda(request):
 def salvar_venda(request):
     global lista_preco   
     if request.method == 'POST':
+        lista = request.session.get('lista_preco', [])
+        print(lista)
         try:
             print("Obtendo valores de 'lista_preco'")
             print(lista_preco)            
