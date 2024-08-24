@@ -279,10 +279,10 @@ def pesquisar_vendas(request):
 
 def deletar_venda(request, id):
     template_name = 'vendas/partials/_table.html'
-    global lista_preco
+    lista_preco = request.session.get('lista_preco', [])
     id_str = str(id)
     lista_preco = [item for item in lista_preco if item['codigo_barras'] != id_str]    
-    print(lista_preco)
+    request.session['lista_preco'] = lista_preco
     return render(request, template_name)
 
 
