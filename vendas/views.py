@@ -47,7 +47,8 @@ def venda(request):
     context = {'filter': object_filter, 'form':form, 'object_venda': object_vendas, 'caixa_form': form_caixa, 'valor': valor, 'filtro_venda': filter_vendas}
     return render(request, 'vendas/venda.html', context)
 
-def inserir_venda(request): 
+def inserir_venda(request):
+    global lista_preco 
     if request.method == 'POST':
         print("Método POST recebido")
         cod_barras = request.POST.get('codigo_barras', None)
@@ -98,7 +99,8 @@ def inserir_venda(request):
     return JsonResponse({'success': False, 'message': 'Método não permitido'})
 
 
-def salvar_venda(request):    
+def salvar_venda(request):
+    global lista_preco   
     if request.method == 'POST':
         try:
             print("Obtendo valores de 'lista_preco'")
