@@ -278,11 +278,23 @@ def pesquisar_vendas(request):
     return render(request, template_name, context)
 
 def deletar_venda(request, id):
+    global lista_preco
     template_name = 'vendas/partials/_table.html'
-    lista_preco = request.session.get('lista_preco', [])
+    print('AQUI FOI CHAMADO A FUNÇÃO DELETAR VENDA')
+    print(f'essa é a lista fora da session: {lista_preco}')
+    lista_preco_session = request.session.get('lista_preco', [])
+    print(f'Obtendo a lista_session para deletar: {lista_preco_session}')
     id_str = str(id)
-    lista_preco = [item for item in lista_preco if item['codigo_barras'] != id_str]    
-    request.session['lista_preco'] = lista_preco
+    print(f'Item a ser deletado: {id_str}')
+    ocorrencia_excluida_session = False
+    lista_preco_session = [item for item in lista_preco_session if not (item['codigo_barras'] == id_str and not ocorrencia_excluida_session and (ocorrencia_excluida_session := True))]
+    ocorrencia_excluida = False
+    lista_preco = [item for item in lista_preco if not (item['codigo_barras'] == id_str and not ocorrencia_excluida and (ocorrencia_excluida := True))]   
+    request.session['lista_preco'] = lista_preco_session
+    request.session.modified = True
+    print(f'Lista após deletar: {lista_preco}')
+    print(f'essa é a session: {request.session.get('lista_preco', [])}')
+
     return render(request, template_name)
 
 
