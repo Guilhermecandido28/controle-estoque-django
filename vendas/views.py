@@ -105,8 +105,7 @@ def inserir_venda(request):
 def salvar_venda(request):
     global lista_preco   
     if request.method == 'POST':
-        lista = request.session.get('lista_preco', [])
-        print(lista)
+        lista_preco = request.session.get('lista_preco', [])
         try:
             print("Obtendo valores de 'lista_preco'")
             print(lista_preco)            
