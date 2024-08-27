@@ -78,7 +78,18 @@ document.getElementById('search_codigo_barras').addEventListener('submit', funct
     let valorDesconto = desconto / 100;
     console.log('Valor do desconto:', valorDesconto);
 
-    fetch(`pesquisar_produto/?search_codigo_barras=${search_codigo_barras}`)
+    fetch('pesquisar_produto/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')  // Se você estiver usando CSRF no Django
+        },
+        body: JSON.stringify({
+            search_codigo_barras: search_codigo_barras,
+            quantidade: quantidade,
+            desconto: desconto
+        })
+    })
     .then(response => {
         console.log('Resposta recebida do servidor.');
         return response.json();
@@ -138,6 +149,22 @@ document.getElementById('search_codigo_barras').addEventListener('submit', funct
         console.error('Erro ao buscar dados:', error);
     });
 });
+
+// Função para pegar o CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     function updateModalTotal() {

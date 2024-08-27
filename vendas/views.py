@@ -16,8 +16,8 @@ import json
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
-lista_preco = []
 
 @login_required
 def venda(request):
@@ -51,32 +51,43 @@ def venda(request):
 
 
 
+@csrf_exempt
 def pesquisar_produto(request):
-    print("Iniciando a pesquisa de produto...")
-    search_codigo_barras = request.GET.get('search_codigo_barras', '')
-    print(f"Código de barras recebido: {search_codigo_barras}")
-    
-    # Consultando o banco de dados com o código de barras
-    produtos = Estoque.objects.filter(codigo_barras__exact=search_codigo_barras)
-    print(f"Produtos encontrados: {produtos}")
+    if request.method == 'POST':
+        try:
+            # Carregar o JSON do corpo da requisição
+            data = json.loads(request.body)
+            search_codigo_barras = data.get('search_codigo_barras', '')
+            print(f"Código de barras recebido: {search_codigo_barras}")
 
-    results = []
-    for produto in produtos:
-        print(f"Produto encontrado: {produto}")
+            # Consultar o banco de dados com o código de barras
+            produtos = Estoque.objects.filter(codigo_barras__exact=search_codigo_barras)
+            print(f"Produtos encontrados: {produtos}")
 
-        results.append({
-            'codigo_barras': produto.codigo_barras,
-            'descricao': produto.descricao,
-            'tamanho': produto.tamanho,
-            'cor': produto.cor,
-            'preco': float(produto.venda),  # Convertendo Decimal para float
-        })
+            results = []
+            for produto in produtos:
+                print(f"Produto encontrado: {produto}")
 
-    print(f"Resultados da pesquisa: {results}")
+                results.append({
+                    'codigo_barras': produto.codigo_barras,
+                    'descricao': produto.descricao,
+                    'tamanho': produto.tamanho,
+                    'cor': produto.cor,
+                    'preco': float(produto.venda),  # Convertendo Decimal para float
+                })
 
-    data = {'results': results}
-    print(f"Dados a serem retornados: {data}")
-    return JsonResponse(data)
+            print(f"Resultados da pesquisa: {results}")
+
+            data = {'results': results}
+            print(f"Dados a serem retornados: {data}")
+            return JsonResponse(data)
+
+        except json.JSONDecodeError:
+            print("Erro ao decodificar o JSON.")
+            return JsonResponse({'error': 'Dados inválidos'}, status=400)
+
+    else:
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
 
 
 def salvar_venda(request):
