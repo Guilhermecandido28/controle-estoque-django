@@ -10,7 +10,7 @@
         <div class="col-12 col-lg-12">
             <div class="bg-custom card h-100">
                 <div class="card-body d-flex justify-content-evenly align-items-center">
-                    <form class="d-flex" role="search" id="search_codigo_barras">
+                    <form class="d-flex" role="search" id="search_codigo_barras" method="POST">
                         {% for field in filter.form %}
                         <div class="input-group pe-5">
                             {{ field }}
