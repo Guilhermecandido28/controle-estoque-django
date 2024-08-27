@@ -64,30 +64,41 @@ function renderiza_grafico1() {
 
 document.getElementById('search_codigo_barras').addEventListener('submit', function(e) {
     e.preventDefault();
-    
+    console.log('Formulário de busca enviado.');
+
     const search_codigo_barras = document.getElementById('id_codigo_barras').value;
+    console.log('Código de barras pesquisado:', search_codigo_barras);
+
     const quantidade = parseFloat(document.getElementById('quantidade').value);
+    console.log('Quantidade:', quantidade);
+
     const desconto = parseFloat(document.getElementById('desconto').value);
-    
-    // Cálculo do valor de desconto
+    console.log('Desconto:', desconto);
+
     let valorDesconto = desconto / 100;
+    console.log('Valor do desconto:', valorDesconto);
 
     fetch(`pesquisar_produto/?search_codigo_barras=${search_codigo_barras}`)
-    .then(response => response.json())
+    .then(response => {
+        console.log('Resposta recebida do servidor.');
+        return response.json();
+    })
     .then(data => {
+        console.log('Dados recebidos:', data);
+        
         const tabela_produtos = document.querySelector('#lista_item tbody');
         const total_geralElement = document.getElementById('total_geral');
         
-        // Configuração para formatação de moeda em reais
         const currencyFormatter = new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: 'BRL'
         });
 
-        // Recupera o total acumulado do atributo do elemento
         let totalGeralAcumulado = parseFloat(total_geralElement.getAttribute('data-total') || '0');
+        console.log('Total geral acumulado:', totalGeralAcumulado);
 
         data.results.forEach(item => {
+            console.log('Processando item:', item);
             let row = '<tr>';
             row += `<td>${item.codigo_barras}</td>`;
             row += `<td>${item.descricao}</td>`;
@@ -96,74 +107,62 @@ document.getElementById('search_codigo_barras').addEventListener('submit', funct
             row += `<td>${quantidade}</td>`;
             row += `<td>${desconto}%</td>`;
             
-            // Verificação se o campo 'preco' existe e é um número
             const preco = parseFloat(item.preco);
             let valorFinal;
             if (!isNaN(preco) && preco > 0) {
                 valorFinal = (preco * quantidade) - (preco * quantidade * valorDesconto);
                 row += `<td>${currencyFormatter.format(valorFinal)}</td>`;
+                console.log('Valor final calculado:', valorFinal);
             } else {
                 valorFinal = 0;
-                row += `<td>Preço não disponível</td>`;  // Mensagem de erro caso o preço seja inválido
+                row += `<td>Preço não disponível</td>`;
+                console.log('Preço não disponível para item:', item.codigo_barras);
             }
             row += '</tr>';
             
-            tabela_produtos.innerHTML += row;  // Adiciona a nova linha à tabela
+            tabela_produtos.innerHTML += row;
+            console.log('Linha adicionada à tabela:', row);
 
-            // Atualiza o total acumulado
             totalGeralAcumulado += valorFinal;
         });
 
-        // Atualiza o total na página e armazena o total no atributo do elemento
         total_geralElement.textContent = currencyFormatter.format(totalGeralAcumulado);
         total_geralElement.setAttribute('data-total', totalGeralAcumulado);
+        console.log('Total geral atualizado:', totalGeralAcumulado);
 
-        // Limpar os campos do formulário após a inserção
         document.getElementById('id_codigo_barras').value = '';
+        console.log('Campo código de barras limpo.');
         
     })
-    .catch(error => console.error('erro ao buscar dados:', error));
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Função para atualizar o valor total no modal
-    function updateModalTotal() {
-        const totalGeral = document.getElementById('total_geral').textContent;
-        const modalTotalElement = document.querySelector('#forma-pagamento #modal_total_geral');
-        if (modalTotalElement) {
-            modalTotalElement.textContent = `Total: ${totalGeral}`;
-        }
-    }
-
-    // Adiciona um evento para o modal ser mostrado
-    const modal = document.getElementById('forma-pagamento');
-    modal.addEventListener('show.bs.modal', function (event) {
-        updateModalTotal();
+    .catch(error => {
+        console.error('Erro ao buscar dados:', error);
     });
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Função para atualizar o valor total no modal
     function updateModalTotal() {
         const totalGeral = document.getElementById('total_geral').textContent;
+        console.log('Atualizando total no modal:', totalGeral);
+
         const modalTotalElement = document.querySelector('#forma-pagamento #modal_total_geral');
         if (modalTotalElement) {
             modalTotalElement.textContent = `Total: ${totalGeral}`;
+            console.log('Total atualizado no modal:', totalGeral);
         }
     }
 
-    // Adiciona um evento para o modal ser mostrado
     const modal = document.getElementById('forma-pagamento');
     modal.addEventListener('show.bs.modal', function (event) {
+        console.log('Modal exibido.');
         updateModalTotal();
     });
 });
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btnSalvarItens').addEventListener('click', function(event) {
-        event.preventDefault(); // Previne o comportamento padrão do formulário
+        event.preventDefault();
+        console.log('Botão salvar itens clicado.');
 
-        // Coleta dados da tabela
         const itens = [];
         document.querySelectorAll('#lista_item tbody tr').forEach(row => {
             const item = {
@@ -176,17 +175,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 preco: limparPreco(row.children[6].textContent)
             };
             itens.push(item);
+            console.log('Item coletado da tabela:', item);
         });
 
-        // Coleta dados do formulário
         const form = document.getElementById('formulario-venda');
         const formData = new FormData(form);
         const formEntries = {};
         formData.forEach((value, key) => {
             formEntries[key] = value;
+            console.log('Campo do formulário:', key, value);
         });
 
-        // Envia dados para a view Django
         fetch("/vendas/salvar_venda/", {
             method: 'POST',
             headers: {
@@ -199,84 +198,83 @@ document.addEventListener('DOMContentLoaded', function() {
             })
         })
         .then(response => {
+            console.log('Resposta recebida da view Django.');
             if (!response.ok) {
                 throw new Error('Erro na resposta da view.');
             }
             return response.json();
         })
         .then(data => {
+            console.log('Dados recebidos após salvar venda:', data);
+            
             const messageContainer = document.getElementById('messages');
 
             if (data.success) {
-                // Mensagem de sucesso que some após 3 segundos
                 const successMessage = document.createElement('div');
                 successMessage.className = 'alert alert-success fade show';
                 successMessage.textContent = 'Venda finalizada com sucesso!';
-                messageContainer.innerHTML = ''; // Limpa mensagens anteriores
+                messageContainer.innerHTML = '';
                 messageContainer.appendChild(successMessage);
                 
-                // Esconde a mensagem de sucesso após 3 segundos
                 setTimeout(() => {
                     successMessage.classList.remove('show');
                     successMessage.classList.add('fade');
                     setTimeout(() => {
-                        messageContainer.innerHTML = ''; // Remove o elemento após a animação de desaparecimento
-                    }, 1000); // Tempo para a animação de desaparecimento
-                }, 3000); // Mensagem visível por 3 segundos
+                        messageContainer.innerHTML = '';
+                    }, 1000);
+                }, 3000);
 
-                // Limpa a tabela
                 document.querySelector('#lista_item tbody').innerHTML = '';
                 
-                // Define valores padrão para os campos do formulário
                 document.querySelector('[name="codigo_barras"]').value = '';
                 document.querySelector('[name="quantidade"]').value = '1';
                 document.querySelector('[name="desconto"]').value = '0';
                 
-                // Atualiza o total geral e o modal
                 const total_geralElement = document.getElementById('total_geral');
-                total_geralElement.textContent = 'R$ 0,00'; // Resetando o total geral
+                total_geralElement.textContent = 'R$ 0,00';
                 total_geralElement.setAttribute('data-total', '0');
                 document.getElementById('modal_total_geral').textContent = 'Total: R$ 0,00';
+                console.log('Valores do formulário e tabela resetados.');
+
                 setTimeout(function() {
                     window.location.reload();
                 }, 3000);
 
             } else {
-                // Mensagem de erro persistente com detalhes do erro
                 const errorMessage = document.createElement('div');
                 errorMessage.className = 'alert alert-danger';
                 errorMessage.textContent = data.error || 'Falha ao finalizar a venda. Por favor, verifique os dados e tente novamente.';
-                messageContainer.innerHTML = ''; // Limpa mensagens anteriores
+                messageContainer.innerHTML = '';
                 messageContainer.appendChild(errorMessage);
             }
         })
         .catch(error => {
             console.error('Erro:', error);
             const messageContainer = document.getElementById('messages');
-            // Mensagem de erro persistente
             const errorMessage = document.createElement('div');
             errorMessage.className = 'alert alert-danger';
             errorMessage.textContent = 'Erro ao processar a venda. Por favor, tente novamente mais tarde.';
-            messageContainer.innerHTML = ''; // Limpa mensagens anteriores
+            messageContainer.innerHTML = '';
             messageContainer.appendChild(errorMessage);
         });
     });
 });
 
 function limparPreco(precoStr) {
-    // Remove o prefixo 'R$', espaços e substitui vírgulas por pontos para a parte decimal
+    console.log('Limpar preço recebido:', precoStr);
+
     precoStr = precoStr.replace('R$', '').replace(' ', '').trim();
-    
-    // Substitui a vírgula decimal por ponto
+    console.log('Preço após remoção de prefixo e espaços:', precoStr);
+
     if (precoStr.includes(',')) {
         precoStr = precoStr.replace('.', '').replace(',', '.');
     } else {
         precoStr = precoStr.replace('.', '').replace(',', '.');
     }
-    console.log(precoStr)
+    console.log('Preço após substituição de vírgulas por pontos:', precoStr);
+
     return precoStr;
 }
-
 
 
 

@@ -52,12 +52,17 @@ def venda(request):
 
 
 def pesquisar_produto(request):
-    search_codigo_barras = request.GET.get('search_codigo_barras', '')    
+    print("Iniciando a pesquisa de produto...")
+    search_codigo_barras = request.GET.get('search_codigo_barras', '')
+    print(f"Código de barras recebido: {search_codigo_barras}")
+    
     # Consultando o banco de dados com o código de barras
     produtos = Estoque.objects.filter(codigo_barras__exact=search_codigo_barras)
-    
+    print(f"Produtos encontrados: {produtos}")
+
     results = []
     for produto in produtos:
+        print(f"Produto encontrado: {produto}")
 
         results.append({
             'codigo_barras': produto.codigo_barras,
@@ -67,38 +72,43 @@ def pesquisar_produto(request):
             'preco': float(produto.venda),  # Convertendo Decimal para float
         })
 
+    print(f"Resultados da pesquisa: {results}")
+
     data = {'results': results}
+    print(f"Dados a serem retornados: {data}")
     return JsonResponse(data)
-
-        
-
 
 
 def salvar_venda(request):
     if request.method == 'POST':
+        print("Iniciando o processo de salvamento da venda...")
         try:
             # Coleta e imprime dados recebidos
             data = json.loads(request.body)
-            print('Dados recebidos:', data)
+            print(f"Dados recebidos: {data}")
 
             itens = data.get('itens', [])
             form_data = data.get('form', {})
+            print(f"Itens: {itens}")
+            print(f"Formulário: {form_data}")
 
             # Busca instâncias de cliente e vendedor
             cliente_id = form_data.get('cliente')
             vendedor_id = form_data.get('vendedor')
+            print(f"ID do cliente: {cliente_id}")
+            print(f"ID do vendedor: {vendedor_id}")
 
             cliente = Clientes.objects.filter(pk=cliente_id).first()
             vendedor = Vendedores.objects.filter(pk=vendedor_id).first()
+            print(f"Cliente encontrado: {cliente}")
+            print(f"Vendedor encontrado: {vendedor}")
 
             # Calcula o desconto total e o total da venda
             desconto_total = sum(int(item.get('desconto', '0').replace('%', '')) for item in itens)
-            
+            print(f"Desconto total calculado: {desconto_total}")
 
             total_venda = sum(float(item.get('preco', '0').replace(',', '.')) for item in itens)
-            print(f'Total venda: {total_venda}')
-
-
+            print(f"Total da venda calculado: {total_venda}")
 
             # Cria a venda
             venda = Vendas(
@@ -109,7 +119,9 @@ def salvar_venda(request):
                 forma_pagamento=form_data.get('radio'),
                 total=total_venda,
             )
+            print(f"Venda a ser salva: {venda}")
             venda.save()
+            print("Venda salva com sucesso.")
 
             # Geração do recibo
             print("Iniciando geração do recibo...")
@@ -122,6 +134,7 @@ def salvar_venda(request):
                 preco = float(item['preco'].replace(',', '.'))
                 recibo['venda'].append(preco)
                 recibo['quantidade'].append(item['quantidade'])
+                print(f"Item do recibo: {item}")
 
             # Convertendo as listas para strings, unindo os valores com ', '
             recibo['descricao'] = ', '.join(recibo['descricao'])
@@ -160,16 +173,20 @@ def salvar_venda(request):
             return JsonResponse({'success': True})
         
         except ValidationError as e:
+            print(f'Erro de validação: {e}')
             return JsonResponse({'success': False, 'error': str(e)})
         
         except json.JSONDecodeError:
+            print('Erro ao decodificar JSON. Verifique o formato dos dados enviados.')
             return JsonResponse({'success': False, 'error': 'Erro ao decodificar JSON. Verifique o formato dos dados enviados.'}) 
             
-        except Exception as e:           
-            
-            return JsonResponse({'success': False, 'error': e})
+        except Exception as e:
+            print(f'Erro inesperado: {e}')
+            return JsonResponse({'success': False, 'error': str(e)})
 
+    print('Método não permitido')
     return JsonResponse({'success': False, 'error': 'Método não permitido'})
+
 
 
 def movimentacao_dia(request): 
