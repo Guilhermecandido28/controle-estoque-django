@@ -77,12 +77,12 @@ document.getElementById('search_codigo_barras').addEventListener('submit', funct
 
     let valorDesconto = desconto / 100;
     console.log('Valor do desconto:', valorDesconto);
-
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     fetch('pesquisar_produto/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')  // Se você estiver usando CSRF no Django
+            'X-CSRFToken': csrftoken  // Se você estiver usando CSRF no Django
         },
         body: JSON.stringify({
             search_codigo_barras: search_codigo_barras,
