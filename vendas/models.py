@@ -14,7 +14,7 @@ class Vendas(models.Model):
     ]    
     id = models.AutoField(primary_key=True, unique=True) 
     descricao = models.CharField(max_length=1300, default='', null=False, blank=False)
-    cliente = models.ForeignKey(Clientes, on_delete=models.SET_NULL, default=None, null=True)
+    cliente = models.ForeignKey(Clientes, on_delete=models.SET_NULL, default=None, null=True, blank=True)
     desconto = models.IntegerField(default=0)
     vendedor = models.ForeignKey(Vendedores, on_delete=models.CASCADE, null=False, blank=False, default=1)        
     forma_pagamento = models.CharField(max_length=50, choices=FORMAS_DE_PAGAMENTO)

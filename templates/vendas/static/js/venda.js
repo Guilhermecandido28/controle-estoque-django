@@ -62,214 +62,222 @@ function renderiza_grafico1() {
 }
 
 
-// Função para calcular o preço total para uma linha da tabela
-function calcularPrecoTotal(row) {
-  // console.log('Início do cálculo do preço total');
-  var quantidadeElement = row.querySelector('.quantidade');
-  var precoElement = row.querySelector('.preco');
-  if (!quantidadeElement || !precoElement) {
-      // console.error('Erro: Elementos de quantidade ou preço não encontrados.');
-      return 0;
-  }
-  var quantidade = parseInt(quantidadeElement.textContent);
-  var precoUnitario = parseFloat(precoElement.textContent.replace('R$', '').replace(',', '.'));
-  // console.log('Quantidade:', quantidade);
-  // console.log('Preço unitário:', precoUnitario);
-  var precoTotal = precoUnitario;
-  // console.log('Preço total:', precoTotal);
-  // console.log('Fim do cálculo do preço total');
-  return precoTotal.toFixed(2); // Arredonda para 2 casas decimais
-}
+document.getElementById('search_codigo_barras').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const search_codigo_barras = document.getElementById('id_codigo_barras').value;
+    const quantidade = parseFloat(document.getElementById('quantidade').value);
+    const desconto = parseFloat(document.getElementById('desconto').value);
+    
+    // Cálculo do valor de desconto
+    let valorDesconto = desconto / 100;
 
-// Função para atualizar o total geral na tabela
-function atualizarTotalGeral() {
-//   console.log('Início da atualização do total geral');
-  var linhas = document.querySelectorAll('#lista_item tbody tr');
-  var totalGeral = 0;
-  linhas.forEach(function(row) {
-      totalGeral += parseFloat(calcularPrecoTotal(row));
-  });
-    console.log('Total geral calculado:', totalGeral);
-  document.getElementById('total_geral').textContent = 'R$ ' + totalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-//   console.log('Fim da atualização do total geral');
-}
+    fetch(`pesquisar_produto/?search_codigo_barras=${search_codigo_barras}`)
+    .then(response => response.json())
+    .then(data => {
+        const tabela_produtos = document.querySelector('#lista_item tbody');
+        const total_geralElement = document.getElementById('total_geral');
+        
+        // Configuração para formatação de moeda em reais
+        const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
 
+        // Recupera o total acumulado do atributo do elemento
+        let totalGeralAcumulado = parseFloat(total_geralElement.getAttribute('data-total') || '0');
 
-// Chamar a função de atualização do total geral após qualquer modificação na tabela
-document.body.addEventListener('htmx:afterSwap', function(event) {
-//   console.log('Evento htmx:afterSwap disparado');
-//   console.log('Detalhes do evento:', event.detail);
-  var trigger = event.detail.elt; // Obter o elemento que disparou o evento
-//   console.log('Elemento que disparou o evento:', trigger); // Mensagem de depuração
-  if (trigger.id === 'lista_item') {
-    // console.log('Chamando atualizarTotalGeral()');
-    atualizarTotalGeral();
-} else if (trigger.closest('#lista_item')) {
-    // console.log('Chamando atualizarTotalGeral() a partir de um descendente');
-    atualizarTotalGeral();
-}
-});
-
-
-
-// Função para atualizar o total no modal
-
-function atualizarTotalModal(total) {
-  // console.log('Atualizando total no modal:', total);
-  var modalContent = document.querySelector('.modal-body');
-  if (modalContent) {
-      // console.log('Elemento modal-body encontrado');
-      // Limpar o conteúdo do elemento total_geral
-      var totalElement = modalContent.querySelector('#total_geral');
-      if (totalElement) {
-          totalElement.innerHTML = '';
-      } else {
-          // console.log('Erro: Elemento total_geral não encontrado');
-          return;
-      }
-
-      // Criar um elemento para exibir o total da venda
-      var totalText = document.createElement('h5');
-      totalText.textContent = 'Total da Venda: R$ ' + total.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); // Convertendo para string
-      totalText.classList.add('text-success');
-      
-      // Adicionar o elemento do total ao elemento total_geral
-      totalElement.appendChild(totalText);
-
-      // console.log('Total atualizado no modal:', total.toFixed(2));
-  } else {
-      // console.log('Erro: Elemento modal-body não encontrado');
-  }
-}
-
-
-// Chamar a função de atualizar o total do modal quando necessário
-document.body.addEventListener('htmx:afterSwap', function(event) {
-  // console.log('Evento htmx:afterSwap disparado');
-  var trigger = event.detail.elt;
-  // console.log('Elemento que disparou o evento:', trigger)
-  if (trigger.id === 'lista_item') {
-      // console.log('Modal de forma de pagamento exibido');
-      // Obter o total da venda do contexto ou de onde estiver disponível
-      var totalVenda = parseFloat(document.getElementById('total_geral').textContent.replace('R$ ', ''));
-      // console.log('Total da venda obtido:', totalVenda.toFixed(2));
-      if (!isNaN(totalVenda)) {
-          // console.log('Total da venda obtido:', totalVenda.toFixed(2));
-          atualizarTotalModal(totalVenda);
-      } else {
-          // console.log('Erro: Não foi possível obter o total da venda');
-      }
-  }
-});
-
-
-
-// função que atualiza o total quando é colocado um desconto
-function calcularNovoTotal(desconto) {
-  // Obter o total original da venda
-  var totalOriginal = parseFloat(document.getElementById('total_geral').textContent.replace('R$ ', ''));
-  // Calcular o novo total com base no desconto
-  var descontoValor = (totalOriginal * desconto) / 100;
-  var novoTotal = totalOriginal - descontoValor;
-  // Atualizar o total no modal
-  atualizarTotalModal(novoTotal);
-}
-
-// Adicionar um evento ao input de desconto para capturar quando o valor for alterado
-var inputDesconto = document.getElementById('id_desconto');
-if (inputDesconto) {
-  inputDesconto.addEventListener('input', function(event) {
-      // Obter o valor do desconto inserido pelo usuário
-      var desconto = parseFloat(event.target.value);
-      if (!isNaN(desconto)) {
-          // Calcular o novo total da venda com base no desconto
-          calcularNovoTotal(desconto);
-      }
-  });
-}
-
-
-document.body.addEventListener('htmx:afterSwap', function(event) {
-    var trigger = event.detail.elt;
-    // console.log('htmx:afterSwap event triggered');  // Debug message
-
-    if (trigger.id === 'trocas') {
-        // console.log('Trigger id is trocas');  // Debug message
-        var totalTrocaElem = document.getElementById('total_troca');
-        if (totalTrocaElem) {
-            var totalTroca = parseFloat(totalTrocaElem.textContent.replace('R$ ', '').replace(',', '.'));
-            // console.log('Total troca value:', totalTroca);  // Debug message
-            if (!isNaN(totalTroca)) {
-                setTimeout(calcularTotalTroca, 100);  // Add delay
+        data.results.forEach(item => {
+            let row = '<tr>';
+            row += `<td>${item.codigo_barras}</td>`;
+            row += `<td>${item.descricao}</td>`;
+            row += `<td>${item.tamanho}</td>`;
+            row += `<td>${item.cor}</td>`;
+            row += `<td>${quantidade}</td>`;
+            row += `<td>${desconto}%</td>`;
+            
+            // Verificação se o campo 'preco' existe e é um número
+            const preco = parseFloat(item.preco);
+            let valorFinal;
+            if (!isNaN(preco) && preco > 0) {
+                valorFinal = (preco * quantidade) - (preco * quantidade * valorDesconto);
+                row += `<td>${currencyFormatter.format(valorFinal)}</td>`;
             } else {
-                console.error('Erro: totalTroca is NaN');
+                valorFinal = 0;
+                row += `<td>Preço não disponível</td>`;  // Mensagem de erro caso o preço seja inválido
             }
-        } else {
-            console.error('Elemento total_troca não encontrado');
-        }
-    } else if (trigger.id === 'info_produto_trocado' || trigger.id === 'info_produto_novo') {
-        // console.log('Trigger id is info_produto_trocado or info_produto_novo');  // Debug message
-        setTimeout(calcularTotalTroca, 100);  // Add delay to ensure elements are in the DOM
-    } else {
-        console.log('Trigger id is not trocas, info_produto_trocado or info_produto_novo');
-    }
+            row += '</tr>';
+            
+            tabela_produtos.innerHTML += row;  // Adiciona a nova linha à tabela
+
+            // Atualiza o total acumulado
+            totalGeralAcumulado += valorFinal;
+        });
+
+        // Atualiza o total na página e armazena o total no atributo do elemento
+        total_geralElement.textContent = currencyFormatter.format(totalGeralAcumulado);
+        total_geralElement.setAttribute('data-total', totalGeralAcumulado);
+
+        // Limpar os campos do formulário após a inserção
+        document.getElementById('id_codigo_barras').value = '';
+        
+    })
+    .catch(error => console.error('erro ao buscar dados:', error));
 });
 
-function calcularTotalTroca() {
-    // console.log('calcularTotalTroca called');  // Debug message
-    var trocados = document.querySelectorAll('[id^="preco_trocado_"]');
-    var novos = document.querySelectorAll('[id^="preco_novo_"]');
-
-    // console.log('Trocados:', trocados);  // Debug message
-    // console.log('Novos:', novos);  // Debug message
-
-    var totalTrocado = 0;
-    var totalNovo = 0;
-
-    trocados.forEach(function(precoElem) {
-        var precoText = precoElem.textContent;
-        // console.log('Preço trocado text:', precoText);  // Debug message
-        var preco = extrairPreco(precoText);
-        // console.log('Preço trocado parsed:', preco);  // Debug message
-        if (!isNaN(preco)) {
-            totalTrocado += preco;
+document.addEventListener('DOMContentLoaded', function() {
+    // Função para atualizar o valor total no modal
+    function updateModalTotal() {
+        const totalGeral = document.getElementById('total_geral').textContent;
+        const modalTotalElement = document.querySelector('#forma-pagamento #modal_total_geral');
+        if (modalTotalElement) {
+            modalTotalElement.textContent = `Total: ${totalGeral}`;
         }
-    });
+    }
 
-    novos.forEach(function(precoElem) {
-        var precoText = precoElem.textContent;
-        // console.log('Preço novo text:', precoText);  // Debug message
-        var preco = extrairPreco(precoText);
-        // console.log('Preço novo parsed:', preco);  // Debug message
-        if (!isNaN(preco)) {
-            totalNovo += preco;
+    // Adiciona um evento para o modal ser mostrado
+    const modal = document.getElementById('forma-pagamento');
+    modal.addEventListener('show.bs.modal', function (event) {
+        updateModalTotal();
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Função para atualizar o valor total no modal
+    function updateModalTotal() {
+        const totalGeral = document.getElementById('total_geral').textContent;
+        const modalTotalElement = document.querySelector('#forma-pagamento #modal_total_geral');
+        if (modalTotalElement) {
+            modalTotalElement.textContent = `Total: ${totalGeral}`;
         }
+    }
+
+    // Adiciona um evento para o modal ser mostrado
+    const modal = document.getElementById('forma-pagamento');
+    modal.addEventListener('show.bs.modal', function (event) {
+        updateModalTotal();
     });
+});
 
-    var diferenca = totalNovo - totalTrocado;
-    // console.log('Diferença calculada:', diferenca);
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('btnSalvarItens').addEventListener('click', function(event) {
+        event.preventDefault(); // Previne o comportamento padrão do formulário
 
-    var totalTrocaElem = document.getElementById('total_troca');
-    if (totalTrocaElem) {
-        totalTrocaElem.textContent = 'R$ ' + diferenca.toFixed(2).replace('.', ',');
-        // console.log('Elemento total_troca atualizado:', totalTrocaElem.textContent);
+        // Coleta dados da tabela
+        const itens = [];
+        document.querySelectorAll('#lista_item tbody tr').forEach(row => {
+            const item = {
+                codigo_barras: row.children[0].textContent,
+                descricao: row.children[1].textContent,
+                tamanho: row.children[2].textContent,
+                cor: row.children[3].textContent,
+                quantidade: row.children[4].textContent,
+                desconto: row.children[5].textContent,
+                preco: limparPreco(row.children[6].textContent)
+            };
+            itens.push(item);
+        });
+
+        // Coleta dados do formulário
+        const form = document.getElementById('formulario-venda');
+        const formData = new FormData(form);
+        const formEntries = {};
+        formData.forEach((value, key) => {
+            formEntries[key] = value;
+        });
+
+        // Envia dados para a view Django
+        fetch("/vendas/salvar_venda/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                itens: itens,
+                form: formEntries
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro na resposta da view.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const messageContainer = document.getElementById('messages');
+
+            if (data.success) {
+                // Mensagem de sucesso que some após 3 segundos
+                const successMessage = document.createElement('div');
+                successMessage.className = 'alert alert-success fade show';
+                successMessage.textContent = 'Venda finalizada com sucesso!';
+                messageContainer.innerHTML = ''; // Limpa mensagens anteriores
+                messageContainer.appendChild(successMessage);
+                
+                // Esconde a mensagem de sucesso após 3 segundos
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                    successMessage.classList.add('fade');
+                    setTimeout(() => {
+                        messageContainer.innerHTML = ''; // Remove o elemento após a animação de desaparecimento
+                    }, 1000); // Tempo para a animação de desaparecimento
+                }, 3000); // Mensagem visível por 3 segundos
+
+                // Limpa a tabela
+                document.querySelector('#lista_item tbody').innerHTML = '';
+                
+                // Define valores padrão para os campos do formulário
+                document.querySelector('[name="codigo_barras"]').value = '';
+                document.querySelector('[name="quantidade"]').value = '1';
+                document.querySelector('[name="desconto"]').value = '0';
+                
+                // Atualiza o total geral e o modal
+                const total_geralElement = document.getElementById('total_geral');
+                total_geralElement.textContent = 'R$ 0,00'; // Resetando o total geral
+                total_geralElement.setAttribute('data-total', '0');
+                document.getElementById('modal_total_geral').textContent = 'Total: R$ 0,00';
+                setTimeout(function() {
+                    window.location.reload();
+                }, 3000);
+
+            } else {
+                // Mensagem de erro persistente com detalhes do erro
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'alert alert-danger';
+                errorMessage.textContent = data.error || 'Falha ao finalizar a venda. Por favor, verifique os dados e tente novamente.';
+                messageContainer.innerHTML = ''; // Limpa mensagens anteriores
+                messageContainer.appendChild(errorMessage);
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            const messageContainer = document.getElementById('messages');
+            // Mensagem de erro persistente
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'alert alert-danger';
+            errorMessage.textContent = 'Erro ao processar a venda. Por favor, tente novamente mais tarde.';
+            messageContainer.innerHTML = ''; // Limpa mensagens anteriores
+            messageContainer.appendChild(errorMessage);
+        });
+    });
+});
+
+function limparPreco(precoStr) {
+    // Remove o prefixo 'R$', espaços e substitui vírgulas por pontos para a parte decimal
+    precoStr = precoStr.replace('R$', '').replace(' ', '').trim();
+    
+    // Substitui a vírgula decimal por ponto
+    if (precoStr.includes(',')) {
+        precoStr = precoStr.replace('.', '').replace(',', '.');
     } else {
-        console.error('Elemento total_troca não encontrado no calcularTotalTroca');
+        precoStr = precoStr.replace('.', '').replace(',', '.');
     }
+    console.log(precoStr)
+    return precoStr;
 }
 
-function extrairPreco(precoText) {
-    var match = precoText.match(/R\$ ([\d,.]+)/);
-    if (match && match[1]) {
-        return parseFloat(match[1].replace('.', '').replace(',', '.'));
-    }
-    return NaN;
-}
 
-function deleteRows() {
-    // Limpar o conteúdo da tabela
-    var tabela = document.getElementById("lista_item").getElementsByTagName("tbody")[1];
-    tabela.innerHTML = "";
 
-    atualizarTotalGeral();
-}
+
+

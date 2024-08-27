@@ -13,7 +13,8 @@ from django.db.models.aggregates import Sum
 from decimal import Decimal
 from .publisher import RabbitMQPublisher
 import json
-
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 
 lista_preco = []
@@ -48,174 +49,100 @@ def venda(request):
     context = {'filter': object_filter, 'form':form, 'object_venda': object_vendas, 'caixa_form': form_caixa, 'valor': valor, 'filtro_venda': filter_vendas}
     return render(request, 'vendas/venda.html', context)
 
-def inserir_venda(request):
-    global lista_preco 
-    if request.method == 'POST':
-        print("Método POST recebido")
-        cod_barras = request.POST.get('codigo_barras', None)
-        print(f"Código de barras recebido: {cod_barras}")
 
-        if cod_barras and len(cod_barras) == 13:
-            print("Código de barras válido com 13 caracteres")
-            filtro = CodBarrasFilter(request.POST, queryset=Estoque.objects.all())
-            print("Filtro de código de barras aplicado")
-            
-            # Aplicar o filtro
-            obj = filtro.qs.values('codigo_barras', 'descricao', 'tamanho', 'cor', 'venda')
-            print(f"Resultados do filtro: {obj}")
-            
-            quantidade = request.POST.get('quantidade', None)
-            print(f"Quantidade recebida: {quantidade}")
-            
-            desconto = request.POST.get('desconto', None)
-            print(f"Desconto recebido: {desconto}")
-            
-            desconto_porcentagem = Decimal(desconto) / Decimal(100)
-            print(f"Desconto convertido para porcentagem: {desconto_porcentagem}")
-            
-            if obj.exists():
-                print("Objeto existe no estoque")
-                for item in obj:
-                    total = Decimal(int(quantidade)) * Decimal(item['venda'])
-                    total = total - total * desconto_porcentagem  # Calcula o total
-                    print(f"Total calculado para o item: {total}")
-                    
-                    item['total'] = float(total)  # Adiciona o total ao dicionário do item
-                    item['quantidade'] = quantidade
-                    item['venda'] = float(item['venda'])
-                    lista_preco.append(item)
-                    print(f"Item adicionado à lista de preços: {item}")
-                request.session['lista_preco'] = lista_preco
-                print(f'essa é a requisição: {request.session['lista_preco']}')
-                template_name = 'vendas/partials/_table.html'
-                context = {'object': obj, 'filtro': filtro, 'quantidade': quantidade, 'desconto': desconto}
-                print(f"Contexto enviado para o template: {context}")
-                return render(request, template_name, context)
-            else:
-                print("Nenhum resultado encontrado no estoque")
-                return JsonResponse({'success': False, 'message': 'Nenhum resultado encontrado'})
-        else:
-            print("O código de barras deve ter 13 caracteres")
-            return HttpResponseBadRequest("O código de barras deve ter 13 caracteres")
 
-    print("Método não permitido")
-    return JsonResponse({'success': False, 'message': 'Método não permitido'})
+def pesquisar_produto(request):
+    search_codigo_barras = request.GET.get('search_codigo_barras', '')    
+    # Consultando o banco de dados com o código de barras
+    produtos = Estoque.objects.filter(codigo_barras__icontains=search_codigo_barras)
+    
+    results = []
+    for produto in produtos:
+
+        results.append({
+            'codigo_barras': produto.codigo_barras,
+            'descricao': produto.descricao,
+            'tamanho': produto.tamanho,
+            'cor': produto.cor,
+            'preco': float(produto.venda),  # Convertendo Decimal para float
+        })
+
+    data = {'results': results}
+    return JsonResponse(data)
+
+        
+def limpar_preco(preco_str):
+    """Limpa a string de preço para conversão em float."""
+    # Remove o prefixo 'R$', espaços e substitui vírgulas por pontos para a parte decimal
+    preco_str = preco_str.replace('R$', '').replace(' ', '').strip()
+    
+    # Substitui a vírgula decimal por ponto
+    if ',' in preco_str:
+        preco_str = preco_str.replace('.', '').replace(',', '.')
+    else:
+        preco_str = preco_str.replace('.', '').replace(',', '.')
+    
+    try:
+        print(f'preco_str: {preco_str}')
+        return float(preco_str)
+    except ValueError:
+        print(f"Erro ao converter o preço: {preco_str}")
+        return 0.0
 
 
 def salvar_venda(request):
-    global lista_preco   
     if request.method == 'POST':
-        lista_preco = request.session.get('lista_preco', [])
         try:
-            print("Obtendo valores de 'lista_preco'")
-            print(lista_preco)            
-            valores = [(item['codigo_barras'], item['descricao'], item['tamanho'], item['cor'], item['quantidade']) for item in lista_preco]
-            descricao = [', '.join(tupla) for tupla in valores]
-            descricao = '; '.join(descricao)
-            print(f"Descrição gerada: {descricao}")
+            # Coleta e imprime dados recebidos
+            data = json.loads(request.body)
+            print('Dados recebidos:', data)
+
+            itens = data.get('itens', [])
+            form_data = data.get('form', {})
+
+            # Busca instâncias de cliente e vendedor
+            cliente_id = form_data.get('cliente')
+            vendedor_id = form_data.get('vendedor')
+
+            cliente = Clientes.objects.filter(pk=cliente_id).first()
+            vendedor = Vendedores.objects.filter(pk=vendedor_id).first()
+
+            # Calcula o desconto total e o total da venda
+            desconto_total = sum(int(item.get('desconto', '0').replace('%', '')) for item in itens)
             
-            vendedor_id = request.POST.get('vendedor') 
-            print(f"Vendedor ID obtido: {vendedor_id}")
-            
-            vendedores = Vendedores.objects.get(id=vendedor_id)
-            print(f"Vendedor obtido: {vendedores}")
-            
-            cliente_id = request.POST.get('cliente') 
-            print(f"Cliente ID obtido: {cliente_id}")
-            
+
+            total_venda = sum(float(item.get('preco', '0').replace(',', '.')) for item in itens)
+            print(f'Total venda: {total_venda}')
+
+
+
+            # Cria a venda
+            venda = Vendas(
+                descricao='; '.join([f"{item['codigo_barras']}, {item['descricao']}, {item['tamanho']}, {item['cor']}, {item['quantidade']}" for item in itens]),
+                cliente=cliente,
+                desconto=desconto_total,
+                vendedor=vendedor,
+                forma_pagamento=form_data.get('radio'),
+                total=total_venda,
+            )
+            venda.save()
+
+            # Imprime informações para depuração
+            print('Venda salva:', venda)
+
+            return JsonResponse({'success': True})
         
-            try:
-                cliente = Clientes.objects.get(pk=cliente_id)
-                print(f"Cliente obtido: {cliente}")
-            except Exception as e:
-                print(f"Erro ao obter cliente: {e}")
-                cliente = None       
-
-            forma_pagamento = request.POST.get('radio')        
-            print(f"Forma de pagamento obtida: {forma_pagamento}")
-
-            data = datetime.now()       
-            print(f"Data atual: {data}")
+        except ValidationError as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+        
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Erro ao decodificar JSON. Verifique o formato dos dados enviados.'}) 
             
-            total = sum(item['total'] for item in lista_preco)
-            print(f"Total calculado: {total}")
+        except Exception as e:           
             
-            try:
-                # Cria a venda no banco de dados
-                print("Criando venda no banco de dados...")
-                venda = Vendas.objects.create(
-                    descricao=descricao,
-                    cliente=cliente,
-                    forma_pagamento=forma_pagamento,
-                    data=data,
-                    total=total,
-                    vendedor=vendedores
-                )
-                print(f"Venda criada: {venda}")
+            return JsonResponse({'success': False, 'error': 'Campos não preenchidos!'})
 
-                try:
-                    print("Iniciando geração do recibo...")
-                    recibo = {'descricao': [], 'tamanho': [], 'cor': [], 'venda': [], 'quantidade':[]}  # Inicializamos as strings como listas
-                    
-                    for item in lista_preco:
-                        recibo['descricao'].append(item['descricao'])
-                        recibo['tamanho'].append(item['tamanho'])
-                        recibo['cor'].append(item['cor'])
-                        recibo['venda'].append(item['venda'])
-                        recibo['quantidade'].append(item['quantidade'])
-                    
-                    # Convertendo as listas para strings, unindo os valores com ', '
-                    recibo['descricao'] = ', '.join(recibo['descricao'])
-                    recibo['tamanho'] = ', '.join(recibo['tamanho'])
-                    recibo['cor'] = ', '.join(recibo['cor'])
-                    recibo['venda'] = ', '.join([f"R$ {venda:.2f}" for venda in recibo['venda']])
-                    recibo['quantidade'] = ', '.join(recibo['quantidade'])
-                    print(f"Recibo gerado: {recibo}")
-                    
-                except Exception as e:
-                    print(f'Erro ao criar recibo: {e}')
-
-                try:
-                    print("Serializando mensagem para RabbitMQ...")
-                    message = json.dumps({
-                        "data": data.strftime('%d/%m/%Y %H:%M:%S'),
-                        "vendedor": vendedores.nome,
-                        "cliente": cliente.nome if cliente else "",
-                        "forma_pagamento": forma_pagamento,
-                        "total": float(total),
-                        "recibo": recibo
-                    }).encode('latin1')
-                    print(f"Mensagem serializada: {message}")
-                except Exception as e:
-                    print(f'Erro ao serializar mensagem: {e}')
-
-                try:
-                    print("Criando RabbitMQPublisher...")
-                    publisher = RabbitMQPublisher()
-                    print("Publisher criado com sucesso.")
-                    publisher.send_message(message)
-                    print("Mensagem enviada para RabbitMQ.")
-                except Exception as e:
-                    print(f"Erro ao enviar mensagem para o RabbitMQ: {e}")
-
-                lista_preco.clear()
-                print("Lista de preços limpa.")
-
-                messages.success(request, 'A venda foi realizada com sucesso!')  
-
-                return render(request, 'vendas/partials/_message.html')
-            except Exception as e:
-                print(f"Erro ao criar venda: {e}")
-                lista_preco.clear()
-                print("Lista de preços limpa.")
-                messages.error(request, f'A Venda falhou, erro: {e}')           
-                return render(request, 'vendas/partials/_message.html')
-        except ValueError:
-            erro = 'Campos obrigatórios não preenchidos!'
-            print(f"Erro: {erro}")
-            messages.error(request, f'Venda não concluída! Por favor, atualize a página e tente novamente. Erro: {erro}')
-            lista_preco.clear() 
-            return render(request, 'vendas/partials/_message.html') 
+    return JsonResponse({'success': False, 'error': 'Método não permitido'})
 
 
 def movimentacao_dia(request): 

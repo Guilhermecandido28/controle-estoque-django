@@ -10,12 +10,12 @@
         <div class="col-12 col-lg-12">
             <div class="bg-custom card h-100">
                 <div class="card-body d-flex justify-content-evenly align-items-center">
-                    <form class="d-flex" role="search">
+                    <form class="d-flex" role="search" id="search_codigo_barras">
                         {% for field in filter.form %}
                         <div class="input-group pe-5">
                             {{ field }}
                             <button class="btn btn-outline-secondary"
-                            hx-post= "{% url 'codigo_barras' %}", hx-target= '#lista_item',hx-trigger= 'keydown[Enter]', hx-swap= 'beforeend'>
+                            type="submit">
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
@@ -59,10 +59,12 @@
                             <th scope="col">Ação</th>
                           </tr>
                         </thead>
-                        {% include "vendas/partials/_table.html" %}
+                        <tbody>
+
+                        </tbody>
                     </table>                    
                     <div class="w-100 d-flex align-items-baseline justify-content-end">                        
-                        <span class="lead text-success fs-1 fw-semibold ms-5" id="total_geral">R$ 0,00</span>
+                        <span class="lead text-success fs-1 fw-semibold ms-5" id="total_geral" data-total="0">R$ 0,00</span>
                     </div>
                 </div>                
             </div>
