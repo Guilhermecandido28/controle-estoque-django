@@ -54,7 +54,7 @@ def venda(request):
 def pesquisar_produto(request):
     search_codigo_barras = request.GET.get('search_codigo_barras', '')    
     # Consultando o banco de dados com o código de barras
-    produtos = Estoque.objects.filter(codigo_barras__icontains=search_codigo_barras)
+    produtos = Estoque.objects.filter(codigo_barras__exact=search_codigo_barras)
     
     results = []
     for produto in produtos:
@@ -71,23 +71,7 @@ def pesquisar_produto(request):
     return JsonResponse(data)
 
         
-def limpar_preco(preco_str):
-    """Limpa a string de preço para conversão em float."""
-    # Remove o prefixo 'R$', espaços e substitui vírgulas por pontos para a parte decimal
-    preco_str = preco_str.replace('R$', '').replace(' ', '').strip()
-    
-    # Substitui a vírgula decimal por ponto
-    if ',' in preco_str:
-        preco_str = preco_str.replace('.', '').replace(',', '.')
-    else:
-        preco_str = preco_str.replace('.', '').replace(',', '.')
-    
-    try:
-        print(f'preco_str: {preco_str}')
-        return float(preco_str)
-    except ValueError:
-        print(f"Erro ao converter o preço: {preco_str}")
-        return 0.0
+
 
 
 def salvar_venda(request):
@@ -127,8 +111,51 @@ def salvar_venda(request):
             )
             venda.save()
 
-            # Imprime informações para depuração
-            print('Venda salva:', venda)
+            # Geração do recibo
+            print("Iniciando geração do recibo...")
+            recibo = {'descricao': [], 'tamanho': [], 'cor': [], 'venda': [], 'quantidade':[]}  # Inicializamos as listas
+
+            for item in itens:
+                recibo['descricao'].append(item['descricao'])
+                recibo['tamanho'].append(item['tamanho'])
+                recibo['cor'].append(item['cor'])
+                preco = float(item['preco'].replace(',', '.'))
+                recibo['venda'].append(preco)
+                recibo['quantidade'].append(item['quantidade'])
+
+            # Convertendo as listas para strings, unindo os valores com ', '
+            recibo['descricao'] = ', '.join(recibo['descricao'])
+            recibo['tamanho'] = ', '.join(recibo['tamanho'])
+            recibo['cor'] = ', '.join(recibo['cor'])
+            recibo['venda'] = ', '.join([f"R$ {venda:.2f}" for venda in recibo['venda']])
+            recibo['quantidade'] = ', '.join(recibo['quantidade'])
+            print(f"Recibo gerado: {recibo}")
+
+            # Serializando mensagem para RabbitMQ
+            try:
+                print("Serializando mensagem para RabbitMQ...")
+                message = json.dumps({
+                    "data": datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
+                    "vendedor": vendedor.nome if vendedor else "",
+                    "cliente": cliente.nome if cliente else "",
+                    "forma_pagamento": form_data.get('radio'),
+                    "total": float(total_venda),
+                    "recibo": recibo
+                }).encode('latin1')
+                print(f"Mensagem serializada: {message}")
+
+                # Envio para RabbitMQ
+                try:
+                    print("Criando RabbitMQPublisher...")
+                    publisher = RabbitMQPublisher()
+                    print("Publisher criado com sucesso.")
+                    publisher.send_message(message)
+                    print("Mensagem enviada para RabbitMQ.")
+                except Exception as e:
+                    print(f"Erro ao enviar mensagem para o RabbitMQ: {e}")
+
+            except Exception as e:
+                print(f'Erro ao serializar mensagem: {e}')
 
             return JsonResponse({'success': True})
         
@@ -140,7 +167,7 @@ def salvar_venda(request):
             
         except Exception as e:           
             
-            return JsonResponse({'success': False, 'error': 'Campos não preenchidos!'})
+            return JsonResponse({'success': False, 'error': e})
 
     return JsonResponse({'success': False, 'error': 'Método não permitido'})
 
